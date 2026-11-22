@@ -127,6 +127,15 @@ if [ $TOOLS -eq 1 ]; then
     run mkdir -p "$HOME/.local/bin"; run ln -sf "$RED/realesrgan-ncnn-vulkan" "$HOME/.local/bin/realesrgan-ncnn-vulkan"
     rm -f "/tmp/realesrgan-$$.zip"; echo "  + realesrgan-ncnn-vulkan (models in $RED/models)"
   else echo "  ! realesrgan-ncnn-vulkan failed (install it by hand)"; fi
+  # Local voiceover engines (Apache-2.0 Kokoro with Indian voices hm_omega/hm_psi/hf_alpha/hf_beta; MIT Chatterbox for
+  # consented voice cloning). One venv; use it as: ~/.local/share/rolex/tts/.venv/bin/python
+  TTS="${XDG_DATA_HOME:-$HOME/.local/share}/rolex/tts"
+  if command -v uv >/dev/null; then
+    run mkdir -p "$TTS" && run uv venv -q --allow-existing --python 3.11 "$TTS/.venv" </dev/null >/dev/null 2>&1 \
+    && run uv pip install -q --python "$TTS/.venv/bin/python" "kokoro>=0.9" soundfile chatterbox-tts \
+       "en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" </dev/null >/dev/null 2>&1 \
+    && echo "  + voice engines (Kokoro, Chatterbox) -> $TTS/.venv" || echo "  ! voice engines failed (see README)"
+  fi
   # Editorial fonts (SIL OFL, bundled in assets/fonts).
   case "$(uname -s)" in Darwin) FD="$HOME/Library/Fonts" ;; *) FD="$HOME/.local/share/fonts/rolex" ;; esac
   run mkdir -p "$FD" && run cp "$SRC"/assets/fonts/*.ttf "$FD"/ && { command -v fc-cache >/dev/null && run fc-cache -f >/dev/null 2>&1; echo "  + fonts -> $FD"; }

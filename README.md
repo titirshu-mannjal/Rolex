@@ -47,7 +47,7 @@ Restart Claude Code afterwards.
 |---|---|
 | `--packs a,b` | Install these packs (default: `core`) |
 | `--all` | Install every pack |
-| `--tools` | Also install `yt-dlp`, `auto-editor`, `whisper-ctranslate2` (Whisper captions), `edge-tts`, `depthflow` (photo parallax) and `rembg` (cut-outs) through `uv`; the Real-ESRGAN upscaler; and the editorial fonts in `assets/fonts` |
+| `--tools` | Also install `yt-dlp`, `auto-editor`, `whisper-ctranslate2` (Whisper captions), `edge-tts`, `depthflow` (photo parallax) and `rembg` (cut-outs) through `uv`; the Real-ESRGAN upscaler; the Kokoro (Indian English voices) and Chatterbox (voice cloning) engines in `~/.local/share/rolex/tts`; and the editorial fonts in `assets/fonts` |
 | `--dry-run` | Show what would happen, change nothing |
 | `--list` | List the packs |
 

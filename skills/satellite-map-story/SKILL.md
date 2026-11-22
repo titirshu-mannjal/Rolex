@@ -16,7 +16,9 @@ SOURCE=eox bash .../fetch-map-data.sh library/maps 68,22,79,31 4096             
 ```
 
 - Image is plate carree: `x = (lon - lonW) / (lonE - lonW) * W`, `y = (latN - lat) / (latN - latS) * H`. Project GeoJSON with the same formula (or `d3.geoEquirectangular().fitExtent`) so borders sit exactly on the imagery.
-- Fetch two images: a wide one for the opening and a tight one for the region. Cross-dissolve between them during the push so the zoom never goes soft. Max useful zoom is about 1 source pixel per output pixel.
+- Fetch two images from the **same source**: a wide one for the opening and a tight one for the region. Place the tight one inside the same camera container at its bbox position (e.g. left = (lonW_tight - lonW_wide) * px_per_deg), feather its edges with a radial `mask-image`, and fade it in during the push so the zoom never goes soft and no seam shows. Max useful zoom is about 1 source pixel per output pixel.
+- Prefer NASA for country-scale shots: EOX 2016 shows visible tile seams (tone bands) when a whole country is in frame. EOX is better only for city/district-scale close-ups.
+- Drive the camera with one proxy `{X, Y, logScale}` tweened by GSAP and an `onUpdate` that sets `x = 540 - X*s, y = 960 - Y*s, scale = s` on a `transform-origin: 0 0` container: zooms then stay locked on the target point.
 - **India maps must show India's official boundary.** Use `countries_india_pov.geojson` for the country outline. Never use the default world file for India, and never publish a map of India without checking Kashmir and Arunachal Pradesh.
 - Credits: NASA imagery is public domain (credit "NASA" is courtesy). EOX 2016 needs its credit line in the caption or end card (see script header). EOX 2018+ is non-commercial: never use it for brand work.
 
