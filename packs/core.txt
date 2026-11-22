@@ -1,0 +1,119 @@
+# Core Instagram video stack: motion graphics, captions, sound, editing, photo-to-motion, scripting.
+# Line types: skill <folder> | upstream <git-url> <subfolder|.> [dest] | repo <git-url> <name> <install command> | plugin <owner/repo> <plugin@marketplace> | agent <file> | mcp <name> -- <command...>
+skill ad-creative-video
+skill anatomy
+skill animate
+skill animated-chart
+skill animated-infographic
+skill animation-principles
+skill apple-launch-film
+skill bang-motion
+skill beat-sync-editing
+skill brand-intake
+skill business-motion-film
+skill caption-animation
+skill chart-animation
+skill color-motion
+skill countdown-video
+skill design-taste-frontend
+skill diagram-animation
+skill effects
+skill explainer-default
+skill explainer-engaging
+skill explainer-high-energy
+skill explainer-video
+skill ffmpeg-skill
+skill gsap-core
+skill gsap-frameworks
+skill gsap-performance
+skill gsap-plugins
+skill gsap-react
+skill gsap-scrolltrigger
+skill gsap-timeline
+skill gsap-utils
+skill hallmark
+skill impeccable
+skill isometric-animation
+skill kinetic-typography
+skill launch-video
+skill logo-animation
+skill loop-cover
+skill lower-thirds
+skill manim-video
+skill milestone-reveal
+skill motion-art-direction
+skill motion-background
+skill motion-brief-writer
+skill motion-broll
+skill motion-design
+skill motion-effects
+skill motionmaxxing
+skill motion-prompt-writer
+skill object-separation
+skill presentation-video
+skill reel-export
+skill reels-editor
+skill reference-to-motion
+skill remotion-video
+skill short-form-video
+skill shot-composition
+skill sound-effects
+skill talking-head-b-roll
+skill teardown
+skill testimonial-video
+skill threejs-animation
+skill threejs-asset-pipeline
+skill threejs-fundamentals
+skill threejs-geometry
+skill threejs-interaction
+skill threejs-lighting
+skill threejs-loaders
+skill threejs-materials
+skill threejs-performance
+skill threejs-postprocessing
+skill threejs-react-three-fiber
+skill threejs-shaders
+skill threejs-textures
+skill title-sequence-3d
+skill video-short
+skill video-shotcraft
+skill video-use
+skill vox-explainer
+skill whiteboard-animation
+skill wrapped-video
+skill llms.txt
+upstream https://github.com/vibe-motion/skills.git 3d-chladni-render
+upstream https://github.com/vibe-motion/skills.git brand-launch-video-star
+upstream https://github.com/vibe-motion/skills.git claude-typer
+upstream https://github.com/vibe-motion/skills.git colorize
+upstream https://github.com/vibe-motion/skills.git disney-animation-rule-skill
+upstream https://github.com/vibe-motion/skills.git fisheye-motion
+upstream https://github.com/vibe-motion/skills.git light-spotlight-render
+upstream https://github.com/vibe-motion/skills.git perspective-illusion
+upstream https://github.com/vibe-motion/skills.git pixel2motion
+upstream https://github.com/vibe-motion/skills.git printed-curtain-render
+upstream https://github.com/vibe-motion/skills.git procedural-fish-render
+upstream https://github.com/vibe-motion/skills.git remotion-3d-ticker
+upstream https://github.com/vibe-motion/skills.git remotion-candlestick
+upstream https://github.com/vibe-motion/skills.git remotion-vinyl-player
+upstream https://github.com/vibe-motion/skills.git ruler-progress-render
+upstream https://github.com/vibe-motion/skills.git threejs-earth-render
+upstream https://github.com/vibe-motion/skills.git wechat-2d-render
+agent impeccable-asset-producer.md
+agent impeccable-documenter.md
+agent impeccable-finish-reviewer.md
+agent impeccable-manual-edit-applier.md
+plugin remotion-dev/claude-code-plugin remotion@remotion
+plugin heygen-com/hyperframes hyperframes@hyperframes
+plugin social-media-skills/skills social-media-skills@social-media-skills
+plugin sergebulaev/instagram-skills instagram-skills@instagram-skills
+plugin itpartypattaya/reels-montage it-reelsmaker@itparty
+plugin Poppify/poppify-claude-plugin poppify@poppify
+plugin nextlevelbuilder/ui-ux-pro-max-skill ui-ux-pro-max@ui-ux-pro-max-skill
+plugin anthropics/claude-plugins-official frontend-design@claude-plugins-official
+mcp playwright -- npx --yes @playwright/mcp@latest
+plugin artemnovitckii/claude-animation-skills animation-skills@claude-animation-skills
+plugin tuzhechen2005/opus-video-skills kinetic-reel@opus-video-skills
+plugin tuzhechen2005/opus-video-skills painted-animation@opus-video-skills
+upstream https://github.com/Sunwood-ai-labs/hyperframes-motion-reel-skill.git . hyperframes-motion-reel
+repo https://github.com/0xS4N4TG/papercut-explainer.git papercut-explainer ./install.sh --mode standard --yes --skills-dir "$ROLEX_SKILLS_DIR"

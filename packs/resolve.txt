@@ -1,0 +1,13 @@
+# DaVinci Resolve editing pack. Needs DaVinci Resolve Studio. Licence CC BY-NC 4.0: non-commercial use only unless the author agrees.
+skill broll
+skill captions
+skill edit-video
+skill figma-roundtrip
+skill motion-overlays
+skill music-and-sound
+skill resolve-scripting
+skill rough-cut
+skill video-editor-setup
+skill vlog-pacing
+skill voice-and-audio
+skill youtube-export

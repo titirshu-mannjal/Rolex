@@ -1,0 +1,3 @@
+# AI generation on paid APIs (pay per clip): Remotion Superpowers (ElevenLabs voice/music/SFX, Whisper captions) and VibeFrame (Seedance, Kling, Runway, Veo, Grok image-to-video with a cost cap). Keys are asked for at first use.
+plugin DojoCodingLabs/remotion-superpowers remotion-superpowers@remotion-superpowers
+mcp vibeframe -- npx -y @vibeframe/mcp-server
