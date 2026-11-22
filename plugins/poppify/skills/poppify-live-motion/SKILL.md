@@ -1,0 +1,146 @@
+---
+name: poppify-live-motion
+description: Prompting playbook for Poppify Live Motion (image-to-video) — plain subject animation AND first/last-frame transitions. Use when the user wants "live motion", "animate the subject", a "before/after transformation", a "morph", "first and last frame" / "endFrameUri" interpolation, OR when a generated Veo clip looks wrong — "smoke morph", "cross-fade", "ghost double", "two of the same person", "motion goes backwards", "subject changed identity". Covers how to write the action prompt, how to generate composition-locked end frames with generate {image} (reference params, consistent-frames mode), the journey overridePrompt template for bridged renders, and a failure-modes table.
+---
+
+# Live Motion prompting (Veo 3.1 image-to-video)
+
+Two distinct modes with DIFFERENT prompting rules:
+
+| Mode | What Veo gets | Who writes the prompt |
+|---|---|---|
+| **Plain i2v** (no end frame) | start image only, free-running animation | Poppify's auto prompt builder — fine as-is |
+| **Bridged / interpolation** (`endFrameUri` set) | start image + last frame; Veo must land on the last frame | **YOU** — author `overridePrompt`; the auto prompt is wrong for this mode |
+
+## 1. When to use live motion at all
+
+- 10 seeds/clip, never blanket-applied.
+- **On a reel that SELLS something** (product, local business, app promo, brand identity) the moving treatment is the RECOMMENDATION: offer it first with its price, the 1-seed stills render second. `render` refuses with `motion_decision_unrecorded` until the choice is on record — so "baseline first, offer live after" IS the refusal here. **On any other reel** render the cinematic baseline first, let the user review, then offer the upgrade (see `poppify-build-reel` Step 6).
+- If a response carries a **`stitchOffer` / `stitchTheirPhotos`**, that is the offer: ONE take of their photos cut 2–5 ways for the same 10 seeds — not one clip per shot. Quote it verbatim; do not shrink it to "+10 seeds on shot 1". Otherwise ≤1 live slide per reel, usually the hook.
+- On a live slide the clip supplies **ALL** the motion, camera included — no FFmpeg camera move is layered on it. Put any camera move in the prompt.
+- `search {clips}` before generating — cache hits are free.
+
+## 2. Plain i2v action prompting (no end frame)
+
+The auto prompt (5-part: cinematography + subject + action + context + style) works well here. Your only lever is `liveAction`:
+
+- **Specific physical verbs** beat abstractions: "exhales slowly, hair drifting in the breeze" beats "looks relaxed".
+- Match intensity to framing: close-ups take micro-gestures (blink, breath); wides take real movement (walks, turns).
+- Respect the pairing check in the `generate {clip}` dryRun preview (`pairing.ok` / `suggestedCamera`) — a warned-against camera layered on a big action produces warping.
+- Iterate with `suggest({live_prompt:{...}})` (free, no apiKey) until the assembled prompt reads shippable.
+
+## 3. First/last-frame transition workflow (bridged renders)
+
+The full recipe, in order:
+
+1. **Start image** on the slide (photo or `generate {image}`).
+2. **End frame via `generate {image}`** with `referenceAssetId` / `referenceImageUrl` (consistent-frames mode, same cost) — MUST be composition-locked. **Pass `sessionId`** so the end frame is generated at the session's aspect ratio: the start image, the end frame, and the reel must all be the SAME orientation (vertical by default), or the bridge crops/letterboxes and the interpolation drifts. Prompt template:
+   > "Same camera position, same framing, same background/setting. Only *\<the delta\>* changes. Subject *\<geometric consequence of the action — e.g. two steps lower, closer to camera, larger in frame\>*."
+3. **`edit_session({commands:[{slide:{action:"set_motion_mode", slideIndex, motionMode:"live", liveAction, endFrameUri, liveDurationSeconds: 8}}]})`** — pass 8 explicitly: the current provider (Veo 3.1 Lite) REJECTS `lastFrame` at 4s/6s with `400 INVALID_ARGUMENT ("use case not supported")`; 8 is the only working bucket for bridged renders.
+4. **`suggest({live_prompt:{...}})`** (free preview) — reference only in this mode. The auto prompt is single-frame style (camera move + slow-motion suffix); do NOT ship it for a bridged render.
+5. **Author the journey `overridePrompt`** (template below).
+6. **`search {clips}`** (bridged renders cache in their own slot) → **`generate({sessionId, spendApproved: true, clip:{slideIndex, overridePrompt}})`** (10 seeds — only after the user said yes to that price).
+
+### The journey overridePrompt template
+
+Describe the JOURNEY between the frames — the frames already carry the endpoints. ≤100 words, locked camera, real-time motion. **Phrase everything as what you want to SEE — never write "no ___" in the positive prompt** (Veo renders the named noun; a "no double image" clause is exactly what produces a ghost). Route exclusions to the `negativePrompt` field instead — see the callout after the example.
+
+> "Locked camera on *\<shot type\>* of *\<subject\>*, *\<transformation verb\>*: *\<how the change physically happens, step by step\>*, one continuous motion ending in the final-frame pose. One single continuous take: every element moves smoothly from its first-frame position to its last-frame position. Single subject throughout, consistent identity, clean clear air."
+
+**Worked example** (a gown color transformation while descending stairs):
+
+> "Locked camera on wide shot of a young woman on a grand staircase, descending two steps toward the camera as a wave of color sweeps down her gown from bodice to hem, the white silk turning deep emerald green like ink spreading through fabric. One single continuous take: every element moves smoothly from its first-frame position to its last-frame position. Single subject throughout, consistent identity, clean clear air."
+
+### Negative prompts — the right home for exclusions
+
+Veo (like most video diffusion models) does **not** parse negation. Writing "no smoke", "no double image", "no cross-fade" in the prompt tends to *summon* the named thing — that's what produced a ghost duplicate on a real render. So:
+
+- **Positive prompt → only what you want to SEE.** Turn every exclusion into a positive target: "single solid figure" (not "no double image"), "crisp clean edges" (not "no cross-fade"), "clear empty air" (not "no smoke"), "real-time motion" (not "no slow-motion").
+- **`overrideNegativePrompt` field → the actual exclusions** (pairs with `overridePrompt`). A solid default for transformations / morphs:
+
+> **Caveat:** `overrideNegativePrompt` reaches the provider on the Vertex path only. On the Gemini-API path it is dropped, so an exclusion you wrote may never have been sent — do not attribute a ghost-duplicate to your prompt wording before checking which path ran.
+  > `smoke, fog, cross-fade, dissolve, double image, ghost, duplicate person, second person, extra limbs, blur, slow motion, warped face, melting`
+
+(The auto-builder already emits a positive-list negativePrompt; this only matters when you author an `overridePrompt`.)
+
+## 4. Transformation choreography rules
+
+- **Mechanism, not endpoints.** "X becomes Y" makes Veo invent its own mechanism — usually a smoke/fog dissolve. Say HOW: sweeps, ripples, spreads, unfolds, settles.
+- **One transformation per clip.** Locomotion + wardrobe + lighting in one 6s clip = mush. Big appearance delta ⇒ small pose/position delta (or split across two slides).
+- **Geometric consistency.** If the action moves the subject, the end frame must show the spatial consequence (closer/larger, turned, relocated). An end frame that contradicts the action's geometry forces Veo to reconcile the impossible.
+- A deliberate camera journey between two viewpoints (e.g. a 180° arc) is possible — describe exactly one camera path in the overridePrompt and make the end frame the destination viewpoint. Never combine a camera journey with a subject transformation.
+- **Style-change morphs (cartoon→real): weigh end-frame vs free-run.** A composition-locked end frame *constrains* realism — it can land half-real/hybrid (real subject, but still-flat props). Free-run plain i2v (no end frame) renders more naturally but risks ghosting and may stop at "colored," not full photoreal. For a clean photoreal landing, invest in a *fully*-real, composition-locked end frame; for a looser "comes alive" look, free-run and phrase the style flip as a mechanism ("color bleeds in from the face and spreads").
+
+### Timed beat-by-beat choreography (staging multi-step actions)
+
+To stage several actions in one clip, give the `overridePrompt` an explicit second-range timeline. Veo follows the ORDER and rough pacing — it does **not** hit exact seconds (for frame-accurate timing use a keyframe tool like After Effects / Rive):
+
+> Locked static camera, one continuous 8-second take. **0–2s:** \<hold / establishing state\>. **2–4s:** \<first action\>. **4–6s:** \<second action / the transformation, described as a mechanism\>. **6–8s:** \<final action\>. One smooth continuous motion, single subject, consistent identity.
+
+**Sequence, don't stack.** Put the actions in series across the beats (drink → morph → walk), never simultaneously — stacking a big appearance change *and* locomotion in the same instant is the mush combo above.
+
+**Worked example** (a line-art doodle coming to life):
+> Locked static camera, plain white background, one continuous 8-second take. 0–2s: she holds still as a flat line drawing. 2–4s: still a drawing, she drinks the coffee. 4–6s: real color bleeds in from her face and spreads outward, the drawing becoming a single real photographed woman. 6–8s: fully real, she turns and walks out of frame.
+
+### Seamless loops (there-and-back + ping-pong)
+
+"Oddly-satisfying" morphs that replay invisibly need the **last frame to equal the first**. Two strategies:
+
+**A — There-and-back (in-product, one Veo clip).** Set `endFrameUri` to the slide's **own start image** — the cleanest possible composition lock (it *is* the start frame → zero ghost/drift risk). The subject morphs away and settles back:
+
+1. `edit_session {slide}({action:"set_motion_mode", motionMode:"live", endFrameUri:<the slide's own start image URL>, liveDurationSeconds:8})`.
+2. Author a **symmetric** overridePrompt — ONE dominant transformation out, hold, reverse:
+   > Locked static camera, one continuous 8-second take. 0–3s: \<subject\> transforms via \<mechanism: sweep / ripple / spread\> into \<peak state\>. 3–5s: fully \<peak state\>, \<one small settling motion\>. 5–8s: the change reverses by the same mechanism, settling back to the exact opening frame. One smooth continuous motion, single subject, consistent identity.
+3. IG / TikTok loop the reel natively — you only need the clip's first and last frame to match.
+
+Watch-outs unique to there-and-back:
+- **The peak has NO frame anchor.** `endFrameUri` pins only the *last* frame (= start). Veo has to *invent* the midpoint peak AND return, all in 8s — so the peak is the weakest, most rushed part. Keep it a **single** transformation; never stack a second motion (a bloom, a spin) on top — it gets dropped or muddies the morph.
+- **Budget the 8s ≈ 3s out / 2s peak / 3s back** — the payoff is on screen only ~2s.
+
+**B — Ping-pong / boomerang (anchored peak, guaranteed loop).** When the peak must read crisp, render a **one-way** A→B clip with a *real, composition-locked* `endFrameUri` = the peak "after" frame (§3) — so the peak is a fully-rendered frame, not an unanchored invention — then play it **forward + reverse**:
+
+```bash
+# on the downloaded one-way live clip
+ffmpeg -i clip.mp4 -filter_complex "[0:v]reverse[r];[0:v][r]concat=n=2:v=1[v]" -map "[v]" boomerang.mp4
+```
+
+- Poppify does **not** boomerang at render today, so this is a local post-step; the result is a standalone loop mp4 you post directly (it bypasses the Poppify composite, so add caption/audio on the platform or in the ffmpeg step). Native ping-pong is an open product request.
+- Trade-off: 2× length (8s source → 16s loop) + one manual step. Worth it for product reveals and satisfying morphs where the peak must be sharp.
+
+**Rule of thumb:** subtle round-trip → **there-and-back** (one clip, fully in-product). Crisp anchored peak → **ping-pong** (one-way clip + boomerang).
+
+## 5. Failure modes → cause → fix
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Smoke / fog / cross-fade morph | Prompt restated endpoints, no mechanism | Rewrite overridePrompt: describe HOW the change physically happens |
+| Ghost duplicate of the subject | End frame not composition-locked (camera/framing drifted) | Regenerate end frame with the lock template |
+| Motion goes backwards / subject drifts away | End-frame geometry contradicts the action | Regenerate end frame showing the geometric consequence of the motion |
+| Identity drift (face/outfit changes) | Too many simultaneous changes | One transformation per clip; shrink the pose delta |
+| Rushed, jump-cut smear | too-short bucket on a real transformation | `liveDurationSeconds: 8` |
+| `400 INVALID_ARGUMENT` ("use case not supported") on generate | `lastFrame` + 4s/6s duration on Veo 3.1 Lite | Set `liveDurationSeconds: 8` — the only bucket the provider accepts with an end frame (seeds auto-refund on the failure) |
+| Clip ignores the end frame entirely (free-runs) | Provider support, not prompting | Re-check `endFrameUri` was set on the slide; if confirmed, flag it — this is a provider issue |
+| Requested secondary motion didn't happen (flowers didn't bloom, hand didn't wave) | It competed with a dominant morph and was silently dropped — additive/organic motion loses to a material transformation | Make it the ONLY motion, or give it its own slide/clip; never stack "bloom/grow/gesture" on top of a "X becomes Y" morph |
+| Loop peak looks rushed / weak / half-formed | there-and-back midpoint is unanchored (`endFrameUri` pins only the last frame) and gets ~2s on screen | Ping-pong a one-way clip with a real anchored end frame (§4 → Seamless loops), or lengthen the out/back beats to give the peak more time |
+
+## 6. Duration, cost, cache
+
+- Veo buckets: **4 / 6 / 8s** for plain i2v. **Bridged renders: 8s ONLY** — Veo 3.1 Lite rejects `lastFrame` at 4/6 (400). Explicit `liveDurationSeconds` always wins over the rounded default.
+- **10 seeds/clip** (~$0.60 at the standard-pack rate); failures auto-refund. Cache hits via `search {clips}` are free.
+- Bridged renders cache separately from plain animations of the same start image, and **override prompts get their own cache slot** — iterating on the overridePrompt never collides with earlier renders. `forceRender: true` for a deliberate re-roll.
+
+## 7. Audio — the clip brings its own, and it replaces the voiceover
+
+Per the Gemini API docs, **Veo 3.1 generates native audio on every clip; it is always on and cannot be disabled.** `generateAudio` is not a parameter — passing it (even `false`) errors on the Gemini path.
+
+That audio now reaches the finished reel. `VideoGenerator` extracts the clip's track and mixes it through the **voiceover path**, so it inherits the normal scheduling and music ducking, and `supportsAudio` reports `true`.
+
+How that changes planning:
+
+- **Never buy `generate {narration}` for a slide that has a live clip.** The clip's audio REPLACES a generated voiceover on that slide, so paying for one is 5 wasted seeds. Slides with no live clip still use ElevenLabs.
+- **An exact script is still a voiceover job.** Veo produces plausible speech and ambient sound, not dictation — it will not deliver a specific line word-for-word with reliable lip sync. Put scripted lines on a non-live slide via `generate {narration}`; use the live slide for atmosphere, presence and incidental speech.
+- **Only the run owner carries audio.** In a same-image run several slides share one clip at different offsets; the audio is taken once, from the slide that starts it.
+- **A video-only provider degrades cleanly.** Seedance and Kling emit no audio stream, so those slides fall back to the ElevenLabs path untouched.
+- The 10 seeds cover the clip whether or not you use its audio — there is no separate audio charge.
+
+For the wider reel flow (which treatment leads, the consent gate, stitch offers), see `poppify-build-reel`. For verifying the finished clip/reel, see `poppify-render-debug`.

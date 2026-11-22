@@ -1,5 +1,5 @@
 # Core Instagram video stack: motion graphics, captions, sound, editing, photo-to-motion, scripting.
-# Line types: skill <folder> | upstream <git-url> <subfolder|.> [dest] | repo <git-url> <name> <install command> | plugin <owner/repo> <plugin@marketplace> | agent <file> | mcp <name> -- <command...>
+# Line types: skill <folder> | agent <file> | setup <skill> <command> | bundle <folder in tools/> <name> <install command> | plugin <owner/repo> <plugin@marketplace> | mcp <name> -- <command...>
 skill ad-creative-video
 skill anatomy
 skill animate
@@ -82,38 +82,78 @@ skill vox-explainer
 skill whiteboard-animation
 skill wrapped-video
 skill llms.txt
-upstream https://github.com/vibe-motion/skills.git 3d-chladni-render
-upstream https://github.com/vibe-motion/skills.git brand-launch-video-star
-upstream https://github.com/vibe-motion/skills.git claude-typer
-upstream https://github.com/vibe-motion/skills.git colorize
-upstream https://github.com/vibe-motion/skills.git disney-animation-rule-skill
-upstream https://github.com/vibe-motion/skills.git fisheye-motion
-upstream https://github.com/vibe-motion/skills.git light-spotlight-render
-upstream https://github.com/vibe-motion/skills.git perspective-illusion
-upstream https://github.com/vibe-motion/skills.git pixel2motion
-upstream https://github.com/vibe-motion/skills.git printed-curtain-render
-upstream https://github.com/vibe-motion/skills.git procedural-fish-render
-upstream https://github.com/vibe-motion/skills.git remotion-3d-ticker
-upstream https://github.com/vibe-motion/skills.git remotion-candlestick
-upstream https://github.com/vibe-motion/skills.git remotion-vinyl-player
-upstream https://github.com/vibe-motion/skills.git ruler-progress-render
-upstream https://github.com/vibe-motion/skills.git threejs-earth-render
-upstream https://github.com/vibe-motion/skills.git wechat-2d-render
+skill 3d-chladni-render
+skill brand-launch-video-star
+skill claude-typer
+skill colorize
+skill disney-animation-rule-skill
+skill fisheye-motion
+skill light-spotlight-render
+skill perspective-illusion
+skill pixel2motion
+skill printed-curtain-render
+skill procedural-fish-render
+skill remotion-3d-ticker
+skill remotion-candlestick
+skill remotion-vinyl-player
+skill ruler-progress-render
+skill threejs-earth-render
+skill wechat-2d-render
 agent impeccable-asset-producer.md
 agent impeccable-documenter.md
 agent impeccable-finish-reviewer.md
 agent impeccable-manual-edit-applier.md
-plugin remotion-dev/claude-code-plugin remotion@remotion
-plugin heygen-com/hyperframes hyperframes@hyperframes
-plugin social-media-skills/skills social-media-skills@social-media-skills
-plugin sergebulaev/instagram-skills instagram-skills@instagram-skills
-plugin itpartypattaya/reels-montage it-reelsmaker@itparty
-plugin Poppify/poppify-claude-plugin poppify@poppify
-plugin nextlevelbuilder/ui-ux-pro-max-skill ui-ux-pro-max@ui-ux-pro-max-skill
-plugin anthropics/claude-plugins-official frontend-design@claude-plugins-official
+plugin @rolex remotion@rolex remotion-dev/claude-code-plugin
+plugin @rolex hyperframes@rolex heygen-com/hyperframes
+plugin @rolex social-media-skills@rolex social-media-skills/skills
+plugin @rolex instagram-skills@rolex sergebulaev/instagram-skills
+plugin @rolex it-reelsmaker@rolex itpartypattaya/reels-montage
+plugin @rolex ui-ux-pro-max@rolex nextlevelbuilder/ui-ux-pro-max-skill
+plugin @rolex frontend-design@rolex anthropics/claude-plugins-official
 mcp playwright -- npx --yes @playwright/mcp@latest
-plugin artemnovitckii/claude-animation-skills animation-skills@claude-animation-skills
-plugin tuzhechen2005/opus-video-skills kinetic-reel@opus-video-skills
-plugin tuzhechen2005/opus-video-skills painted-animation@opus-video-skills
-upstream https://github.com/Sunwood-ai-labs/hyperframes-motion-reel-skill.git . hyperframes-motion-reel
-repo https://github.com/0xS4N4TG/papercut-explainer.git papercut-explainer ./install.sh --mode standard --yes --skills-dir "$ROLEX_SKILLS_DIR"
+plugin @rolex animation-skills@rolex artemnovitckii/claude-animation-skills
+plugin @rolex kinetic-reel@rolex tuzhechen2005/opus-video-skills
+skill hyperframes-motion-reel
+bundle papercut-explainer papercut-explainer ./install.sh --mode standard --yes --skills-dir "$ROLEX_SKILLS_DIR"
+# --- Animation research picks (2026-11-23) ---
+skill motion-canvas
+skill motion-canvas-agent
+skill animation-basics
+skill line-art-animation
+setup line-art-animation npm install --silent
+skill animation-styles
+setup animation-styles npm install --silent
+skill what-if-animation
+skill vocaloid-style-mv
+skill shader-glsl
+skill particle-system
+skill lottie-animation
+skill svg-animation
+plugin @rolex manim-skill@rolex Yusuke710/manim-skill
+plugin @rolex pixelfx@rolex patch-gg/pixelfx
+plugin @rolex explainer-studio@rolex reedodev/explainer-studio
+plugin @rolex rive-mcp@rolex ODU33104/rive-mcp
+bundle Rev2D rev2d npm install --silent && { claude mcp get rev2d >/dev/null 2>&1 || claude mcp add --scope user rev2d -- node "$PWD/bin/rev2d.js" mcp; }
+# --- Production craft: script, storyboard, direction, art direction (2026-11-23) ---
+skill reel-production
+skill cinematic-director
+skill creative-director
+skill anime-mv-art-direction
+skill manjuforge
+skill storyboard-previsualization
+skill cinematic-shot-direction
+skill lighting-direction
+skill visual-style-direction
+skill character-design-continuity
+skill production-design-direction
+skill editing-montage
+skill social-short-production
+skill anime-animation-production
+skill music-video-production
+agent reel-writer.md
+agent reel-art-director.md
+agent reel-storyboard-artist.md
+agent reel-editor-qa.md
+plugin @rolex visual-skills@rolex smixs/visual-skills
+plugin @rolex screenwriting@rolex jtydhr88/screenwriting-skills
+plugin @rolex shotkit@rolex whystrohm/shotkit

@@ -1,16 +1,16 @@
 # Business and document plugins from Anthropic and partners (not video).
-plugin anthropics/skills document-skills@anthropic-agent-skills
-plugin anthropics/skills example-skills@anthropic-agent-skills
-plugin anthropics/knowledge-work-plugins sales@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins finance@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins data@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins legal@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins operations@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins human-resources@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins product-management@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins small-business@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins slack-by-salesforce@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins apollo@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins product-tracking-skills@knowledge-work-plugins
-plugin anthropics/knowledge-work-plugins pdf-viewer@knowledge-work-plugins
-plugin DietrichGebert/ponytail ponytail@ponytail
+plugin @rolex document-skills@rolex anthropics/skills
+plugin @rolex example-skills@rolex anthropics/skills
+plugin @rolex sales@rolex anthropics/knowledge-work-plugins
+plugin @rolex finance@rolex anthropics/knowledge-work-plugins
+plugin @rolex data@rolex anthropics/knowledge-work-plugins
+plugin @rolex legal@rolex anthropics/knowledge-work-plugins
+plugin @rolex operations@rolex anthropics/knowledge-work-plugins
+plugin @rolex human-resources@rolex anthropics/knowledge-work-plugins
+plugin @rolex product-management@rolex anthropics/knowledge-work-plugins
+plugin @rolex small-business@rolex anthropics/knowledge-work-plugins
+plugin @rolex slack-by-salesforce@rolex anthropics/knowledge-work-plugins
+plugin @rolex apollo@rolex anthropics/knowledge-work-plugins
+plugin @rolex product-tracking-skills@rolex anthropics/knowledge-work-plugins
+plugin @rolex pdf-viewer@rolex anthropics/knowledge-work-plugins
+plugin @rolex ponytail@rolex DietrichGebert/ponytail

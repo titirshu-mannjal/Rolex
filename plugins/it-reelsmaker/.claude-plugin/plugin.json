@@ -1,0 +1,48 @@
+{
+  "name": "it-reelsmaker",
+  "displayName": "IT Reelsmaker",
+  "version": "1.40.0",
+  "description": "Edit vertical short videos (Reels, Shorts, TikTok) from talking-head footage in Claude Code, or cut a long podcast, webinar or interview into a series of clips: cut pauses and retakes by audio, virtual camera and on-brand motion graphics in Remotion, designed scenes for hooks, quotes, numbers and calls to action, word-timed subtitles, face-aware layout, loudness mastering and a 1080×1920 render. Brand profiles with a brand tone. Runs locally with ffmpeg, Node.js and Python.",
+  "author": {
+    "name": "IT Party Pattaya",
+    "email": "mr.a.vaskov@gmail.com",
+    "url": "https://github.com/itpartypattaya"
+  },
+  "homepage": "https://github.com/itpartypattaya/reels-montage/tree/main/plugins/it-reelsmaker",
+  "repository": "https://github.com/itpartypattaya/reels-montage",
+  "license": "MIT",
+  "keywords": [
+    "video",
+    "video-editing",
+    "short-video",
+    "reels",
+    "shorts",
+    "subtitles",
+    "remotion",
+    "ffmpeg",
+    "motion-graphics",
+    "kinetic-typography"
+  ],
+  "userConfig": {
+    "project_root": {
+      "type": "directory",
+      "title": "Editing project folder",
+      "description": "Folder where edits live: edit/<id>/ per video, brands/<slug>/ brand profiles. Leave empty to set it on the first run."
+    },
+    "remotion_dir": {
+      "type": "directory",
+      "title": "Remotion project",
+      "description": "Remotion project used for camera, graphics, subtitles and render, for example <project>/reels. Leave empty to create or pick it on the first run."
+    },
+    "assets_dir": {
+      "type": "directory",
+      "title": "Asset library (optional)",
+      "description": "Your own library of sound effects, music, icons and memes. Leave empty if you don't have one."
+    },
+    "face_model": {
+      "type": "file",
+      "title": "YuNet face model (optional)",
+      "description": "Path to face_detection_yunet_2023mar.onnx for face-aware layout. Leave empty to place text by looking at frames instead."
+    }
+  }
+}

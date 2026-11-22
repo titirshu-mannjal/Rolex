@@ -1,0 +1,638 @@
+"""The brand mascot in the visual plan (references/mascot.md): its geometry, its pose track on the words, the mouth
+from mouth.json, the plan checks and the per-frame plan the kit plays. Used by visual_plan.py and mascot.py, with no
+command line of its own.
+
+The plan's field (mascot.py plan writes it):
+    "mascot": {"x": null, "y": null, "scale": null,   # the anchor (the point between the eyes) on screen; null: placed
+               "facing": 1,                           #   in the lower left, above the subtitle band
+               "from": 0.0, "to": null,               # on screen (seconds of the edit; to null: the video's end)
+               "track": [{"at": "word:look#1", "t": 3.42, "pose": "point_left"}],   # pose changes on words
+               "speaks": null}                        # [[a, b), ...] where the mouth moves; null: the whole narration
+Everything is resolved here, in Python, at stage (props.mascot.frames); the kit only plays it.
+"""
+import hashlib, math, re
+from pathlib import Path
+
+from reels_common import SUB_BAND, brand_file, load_json
+from vp_core import jround, resolve_at
+from vp_scenes import VOICE_SUB_GAP, scene_keep_entries, scene_tone
+
+POSES = ["neutral", "talk", "point_left", "point_right", "point_up", "palm", "think", "surprise", "celebrate", "shrug",
+         "wink"]
+# a pose the mascot does not have -> the first it has of these; "name*" is that pose mirrored, only for a symmetric one
+SUBST = {"talk": ["neutral"], "point_left": ["point_right*", "palm"], "point_right": ["point_left*", "palm"],
+         "point_up": ["palm"], "palm": ["talk"], "think": ["talk"], "surprise": ["celebrate", "palm"],
+         "celebrate": ["surprise", "palm"], "shrug": ["palm"], "wink": ["neutral"]}
+LEVELS = ("off", "calm", "full")  # reel-defaults.json -> brand_tones.<preset>.mascot
+LOUD = ("punchy", "hype", "parody")  # scene tones that may bounce (with brand_tones.<preset>.overshoot: true)
+MIN_GAP_S = 0.8     # pose changes at most this often
+EDGE_S = 0.3        # a gesture this close to a scene's entrance or exit competes with it (SKILL.md section 4)
+BAND_GAP = 30       # px between the mascot's lowest point and the subtitle band
+DEFAULT_H = 540     # px: the placed mascot's height when the room allows it
+# a full scene shares the frame with the mascot (scenes over a voice, a promo): its text ends SCENE_GAP above the
+# mascot's top (the kit's sceneStage, props.mascot.top), from FULL_TEXT_TOP down; the placement keeps that room at least
+# FULL_TEXT_MIN tall (a hook, a stat with its caption, a list of three read in it), a mascot placed by hand into it is an error
+SCENE_GAP = VOICE_SUB_GAP
+FULL_TEXT_TOP, FULL_TEXT_MIN = 250, 540
+# a pose change: "out" eases out over EASE_FRAMES (a calm one); "snap" reaches the pose in SNAP_FRAMES and holds it
+# (a loud scene tone with a full mascot); "settle" snaps and then swings past the pose and back, a damped wobble of
+# SETTLE_AMP of the move every SETTLE_PERIOD frames, fading by SETTLE_DECAY frames (where the brand tone overshoots too)
+EASE_FRAMES, SNAP_FRAMES, SETTLE_FRAMES = 12, 2, 14
+SETTLE_AMP, SETTLE_PERIOD, SETTLE_DECAY = 0.12, 6.0, 3.0
+# frames `since` is kept after a change has eased: a module's channels that follow (rig.ts poseAtLagged: the arms, then
+# the hands and elbows) lag this much at most and finish on it
+LAG_TAIL = 4
+# a blink: the lids half shut, shut, shut, half shut (frames at 30 fps; as long at a higher rate, never under these
+# four frames: the atlas swaps its pictures on the two shut ones); one in about five is a double blink, its second
+# blink DOUBLE_GAP_S after the first, with two open frames between them at least
+BLINK_SHAPE = (0.5, 1.0, 1.0, 0.5)
+DOUBLE_SHARE, DOUBLE_GAP_S = 0.2, 0.27
+CHANGE_CLEAR_S = 0.5  # a planned blink keeps this far from the blink that hides a pose change
+MOUTH_VERSION = 3   # mouth.json by an older mascot.py (one axis, or levels of a third that jumped) is stale
+MOUTH_LEAD = 1      # frames: mouth.json moves the mouth this much before the sound (mascot.py mouth)
+TALK_MIN = 0.08     # an opening under this reads as a closed mouth (the kit's `talking`)
+MOUTH_STEP = 0.25   # the most the opening moves from one frame to the next (mascot.py mouth; kept where speaks cuts it)
+TALK_FRAME = 0.3    # a picture mascot shows its drawn talk frame from this opening (OPEN_FRAME in kit/mascot/AtlasMascot.tsx)
+W, H = 1080, 1920
+
+
+def level(s):
+    """off | calm | full: how much mascot the brand tone allows."""
+    v = (s.get("brand_tone") or {}).get("mascot")
+    return v if v in LEVELS else "calm"
+
+
+def geometry(brand, bdir):
+    """The brand's mascot -> ({kind, box (w, h), anchor (x, y), poses, symmetric}, None) or (None, why)."""
+    m = (brand or {}).get("mascot")
+    slug = (brand or {}).get("slug") or "<slug>"
+    if not isinstance(m, dict) or m.get("kind") not in ("drawn", "atlas"):
+        return None, f"the brand has no mascot: brand.py mascot {slug} --drawn <component in the Remotion project>"
+    src = m
+    if m["kind"] == "atlas":
+        p = brand_file(m.get("rig"), bdir) if m.get("rig") and bdir else None
+        src = load_json(p, None) if p else None
+        if not isinstance(src, dict):
+            return None, f"the brand's mascot atlas {m.get('rig')} is not readable (mascot.py atlas writes it)"
+        src = {"box": src.get("box"), "anchor": src.get("anchor"), "poses": list((src.get("poses") or {}).keys()),
+               "symmetric": src.get("symmetric")}
+    try:
+        bw, bh = (float(v) for v in src["box"])
+        ax, ay = (float(v) for v in src["anchor"])
+        poses = [str(p) for p in src.get("poses") or []]
+    except (KeyError, TypeError, ValueError):
+        return None, (f"the brand's mascot has no box/anchor/poses: brand.py mascot {slug} --drawn {m.get('component')} "
+                      f"reads them from the component")
+    if bw <= 0 or bh <= 0 or not poses:
+        return None, "the brand's mascot box is empty or it has no poses"
+    return {"kind": m["kind"], "box": (bw, bh), "anchor": (ax, ay), "poses": poses,
+            "symmetric": bool(src.get("symmetric"))}, None
+
+
+def substitute(pose, geo):
+    """-> (the pose drawn, mirrored): the mascot's own pose, else the table's stand-in, else neutral."""
+    have = geo["poses"]
+    if pose in have:
+        return pose, False
+    for alt in SUBST.get(pose, []):
+        if alt.endswith("*"):
+            if geo.get("symmetric") and alt[:-1] in have:
+                return alt[:-1], True
+        elif alt in have:
+            return alt, False
+    return ("neutral" if "neutral" in have else have[0]), False
+
+
+# ── the narration and its mouth ──
+
+def voice_track(e):
+    """The track the viewer hears, on the edit's timeline: voice.wav (scenes over a recorded narration), else the rough
+    cut's own audio (final.mp4, which stage copies to public/<id>/video.mp4)."""
+    for name in ("voice.wav", "final.mp4"):
+        if (Path(e) / name).is_file():
+            return Path(e) / name
+    return None
+
+
+def file_stamp(p):
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for b in iter(lambda: f.read(1 << 20), b""):
+            h.update(b)
+    return "sha256:" + h.hexdigest()
+
+
+def speech_words(e):
+    """[(start, end)] of the spoken words in edit/<id>/captions.json (the edit's timeline)."""
+    cap = load_json(Path(e) / "captions.json", {}) or {}
+    return [(float(w["start"]), float(w["end"])) for w in cap.get("words") or []
+            if isinstance(w, dict) and w.get("start") is not None and w.get("end") is not None
+            and str(w.get("text", "")).strip()]
+
+
+def words_stamp(words):
+    """The words' times the mouth was gated by: a new transcript of the same audio makes mouth.json stale too."""
+    return "sha256:" + hashlib.sha256(";".join(f"{a:.3f}-{b:.3f}" for a, b in words).encode()).hexdigest()
+
+
+def load_mouth(e, fps=30):
+    """-> (mouth.json or None, problem or None). Stale: its track changed (the stamp), the track is not the one the
+    viewer hears now, or another frame rate."""
+    e = Path(e)
+    m = load_json(e / "mouth.json", None)
+    if not isinstance(m, dict) or not isinstance(m.get("open"), list):
+        return None, "no mouth.json"
+    if m.get("version") != MOUTH_VERSION or not isinstance(m.get("wide"), list) or len(m["wide"]) != len(m["open"]):
+        return m, "mouth.json was measured by an older mascot.py: measure it again"
+    src = Path(m.get("source") or "")
+    src = src if src.is_absolute() else e / src
+    if not m.get("explicit") and voice_track(e) and voice_track(e).resolve() != src.resolve():
+        return m, f"mouth.json was measured on {src.name}, the narration is now {voice_track(e).name}"
+    if not src.is_file():
+        return m, f"mouth.json: its track {src} is gone"
+    if m.get("stamp") != file_stamp(src):
+        return m, f"mouth.json is stale: {src.name} changed since it was measured"
+    if m.get("words_stamp") and m["words_stamp"] != words_stamp(speech_words(e)):
+        return m, "mouth.json is stale: the words of captions.json changed since it was measured"
+    if int(m.get("fps") or 0) != fps:
+        return m, f"mouth.json is at {m.get('fps')} fps, the kit at {fps}"
+    return m, None
+
+
+def voice_end(e, plan, mouth):
+    if mouth:
+        return mouth["frames"] / float(mouth["fps"])
+    return float(plan.get("duration") or 0.0) if voice_track(e) else 0.0
+
+
+# ── where it stands ──
+
+def subtitle_band(plan, s, doc=None):
+    """[top, bottom] of the subtitle band the mascot keeps clear of, or None without subtitles. One place to ask:
+    the band the last stage recorded, else the layout's."""
+    if plan.get("format") in ("scenes-only", "silent") or str(s.get("subtitles") or "") == "none":  # no subtitles
+        return None
+    if plan.get("subtitles_band"):
+        return list(plan["subtitles_band"])
+    import meme_layout as ml
+    return list(ml.layout(s, doc).get("subtitles_band") or SUB_BAND)
+
+
+def ui_safe_of(s, doc=None):
+    import meme_layout as ml
+    return ml.layout(s, doc)["safe"]
+
+
+def full_scenes(plan, t0, t1):
+    """The full scenes on screen at the same time as the mascot [t0, t1): their text ends above it."""
+    return [i for i in plan.get("inserts", []) if i.get("kind") == "scene" and i.get("status") != "skipped"
+            and i.get("type") != "cover" and i.get("mode") == "full" and i["start"] < t1 and i["start"] + i["dur"] > t0]
+
+
+def placement(m, geo, band, safe, under_full=False):
+    """-> (x, y, scale) of the anchor: the plan's own, else the lower left above the subtitle band (or above the UI
+    zone with no subtitles), as tall as the room allows up to DEFAULT_H. under_full: full scenes share the frame with
+    it, so it also stays low enough to leave their text FULL_TEXT_MIN px above it (2 px of rounding to spare)."""
+    bw, bh = geo["box"]
+    ax, ay = geo["anchor"]
+    bottom = (band[0] - BAND_GAP) if band else (H - safe["bottom"])
+    left = safe["left"] + 20
+    sc = m.get("scale")
+    if not sc:
+        room = min(DEFAULT_H, bottom - safe["top"] - 40)
+        if under_full:
+            room = min(room, bottom - (FULL_TEXT_TOP + FULL_TEXT_MIN + SCENE_GAP) - 2)
+        sc = max(0.1, min(room / bh, (W / 2 - left) / bw))
+        sc = math.floor(sc * 1000) / 1000 if under_full else round(sc, 3)
+    x = m.get("x") if m.get("x") is not None else math.ceil(left + (ax if m.get("facing", 1) == 1 else bw - ax) * sc)
+    y = m.get("y") if m.get("y") is not None else math.floor(bottom - (bh - ay) * sc)
+    return x, y, float(sc)
+
+
+def rect(x, y, sc, geo, facing=1):
+    """[x, y, w, h] of the mascot's box on screen; mirrored around the anchor when facing is -1."""
+    bw, bh = geo["box"]
+    ax, ay = geo["anchor"]
+    x0 = x - (ax if facing == 1 else bw - ax) * sc
+    return [x0, y - ay * sc, bw * sc, bh * sc]
+
+
+def union(rs):
+    x0, y0 = min(r[0] for r in rs), min(r[1] for r in rs)
+    x1, y1 = max(r[0] + r[2] for r in rs), max(r[1] + r[3] for r in rs)
+    return [math.floor(x0), math.floor(y0), math.ceil(x1) - math.floor(x0), math.ceil(y1) - math.floor(y0)]
+
+
+def hits(a, b):
+    return min(a[0] + a[2], b[0] + b[2]) > max(a[0], b[0]) and min(a[1] + a[3], b[1] + b[3]) > max(a[1], b[1])
+
+
+# ── the track ──
+
+def span(m, plan):
+    t0 = float(m.get("from") or 0.0)
+    t1 = float(m["to"]) if m.get("to") is not None else float(plan.get("duration") or 0.0)
+    return t0, t1
+
+
+def changes(m, geo):
+    """The pose changes in time order: [(t, asked, drawn, mirrored)]."""
+    out = []
+    for it in sorted([x for x in m.get("track") or [] if x.get("t") is not None], key=lambda x: float(x["t"])):
+        drawn, mir = substitute(it["pose"], geo) if it.get("pose") in POSES else ("neutral", False)
+        out.append((float(it["t"]), it.get("pose"), drawn, mir))
+    return out
+
+
+def tone_at(t, plan, s):
+    """The scene tone at second t: the scene on screen then, else the video's."""
+    for sc in plan.get("inserts", []):
+        if (sc.get("kind") == "scene" and sc.get("status") != "skipped" and sc.get("type") != "cover"
+                and sc["start"] - 1e-6 <= t < sc["start"] + sc["dur"]):
+            return scene_tone(sc, s)
+    return s.get("scene_tone") or (s.get("brand_tone") or {}).get("scene_tone") or "calm"
+
+
+def change_mode(t, plan, s):
+    """How a pose change at t moves: out (a calm ease), snap (a loud scene tone and a full mascot: a click, then a
+    hold), settle (that and a brand tone that overshoots: the click swings past the pose and back). Only settle
+    overshoots."""
+    if level(s) != "full" or tone_at(t, plan, s) not in LOUD:
+        return "out"
+    return "settle" if (s.get("brand_tone") or {}).get("overshoot") else "snap"
+
+
+def change_frames(mode):
+    """The frames a change of this mode takes to reach its pose (and, for settle, to stop swinging)."""
+    return {"out": EASE_FRAMES, "snap": SNAP_FRAMES, "settle": SETTLE_FRAMES}[mode]
+
+
+def change_k(mode, i):
+    """k, the progress of a change i frames after it began (0 on its first frame; 1 once it is done): out eases out
+    (cubic), snap eases out over SNAP_FRAMES (0.75 on its second frame), settle then swings, a damped sine."""
+    if i <= 0:
+        return 0.0
+    if mode == "out":
+        return 1 - (1 - min(1.0, i / float(EASE_FRAMES))) ** 3
+    k = 1 - (1 - min(1.0, i / float(SNAP_FRAMES))) ** 2
+    if mode == "settle" and SNAP_FRAMES < i < SETTLE_FRAMES:  # done swinging on its last frame
+        j = i - SNAP_FRAMES
+        k = 1 + SETTLE_AMP * math.exp(-j / SETTLE_DECAY) * math.sin(2 * math.pi * j / SETTLE_PERIOD)
+    return k
+
+
+def hashed(seed, k, salt=""):
+    """0..1, the same for the same seed and k: the plan's randomness, the same at every render."""
+    return int(hashlib.sha256(f"{seed}:{k}{salt}".encode()).hexdigest()[:8], 16) / 0xFFFFFFFF
+
+
+def blinks(seed, t0, t1):
+    """The planned blinks: [[t], ...] every 2.6-4.6 s, about one in five [t, t2], a double blink. The same for the same
+    video (no randomness between renders)."""
+    out, t, k = [], t0 + 1.2, 0
+    while t < t1:
+        out.append([t, t + DOUBLE_GAP_S] if hashed(seed, k, ":double") < DOUBLE_SHARE else [t])  # lid_track spaces it
+        t += 2.6 + 2.0 * hashed(seed, k)
+        k += 1
+    return out
+
+
+def blink_shape(fps):
+    """BLINK_SHAPE stretched to the frame rate: the lids per frame of one blink."""
+    n = max(len(BLINK_SHAPE), jround(len(BLINK_SHAPE) * fps / 30.0))
+    return [BLINK_SHAPE[i * len(BLINK_SHAPE) // n] for i in range(n)]
+
+
+def lid_track(seed, t0, t1, fps, change_frames):
+    """{frame: lid 0..1}: a blink over every change of the picture, shut on its first frames (where the atlas swaps
+    its pictures), and the planned blinks that keep CHANGE_CLEAR_S away from those."""
+    shape = blink_shape(fps)
+    lead = shape.index(1.0)
+    hide = [(fc - lead, fc - lead + len(shape)) for fc in change_frames]
+    clear = jround(CHANGE_CLEAR_S * fps)
+    starts = [a for a, _ in hide]
+    for series in blinks(seed, t0, t1):
+        fs = [jround(series[0] * fps)]
+        if len(series) > 1:  # the second blink of a double one, never run into the first
+            fs.append(fs[0] + max(jround((series[1] - series[0]) * fps), len(shape) + 2))
+        a, b = fs[0], fs[-1] + len(shape)
+        if not any(a < he + clear and ha - clear < b for ha, he in hide):
+            starts += fs
+    out = {}
+    for a in starts:
+        for i, v in enumerate(shape):
+            out[a + i] = max(out.get(a + i, 0.0), v)
+    return out
+
+
+def speaking(m, plan, vend):
+    """The half-open spans where the mouth moves: the plan's, else the whole narration while the mascot is on."""
+    if m.get("speaks") is not None:
+        return [(float(a), float(b)) for a, b in m["speaks"]]
+    t0, t1 = span(m, plan)
+    return [(t0, min(t1, vend))] if vend > t0 else []
+
+
+def paced(vals, step=MOUTH_STEP):
+    """vals moved `step` a frame at most: a rise climbs from where it is, a fall starts early enough to keep the pace
+    (so a frame is never higher than vals says, and shut where it says shut)."""
+    out, cur = [], 0.0
+    for v in vals:
+        cur = min(v, cur + step)
+        out.append(cur)
+    for f in range(len(out) - 2, -1, -1):
+        out[f] = min(out[f], out[f + 1] + step)
+    return no_lone(out)
+
+
+def no_lone(vals):
+    """No frame alone: a shut frame between two open ones opens to the lower of them (the mouth does not blink shut
+    between two syllables), and a frame alone on its side of TALK_FRAME takes its neighbours' side, the nearer of
+    their values (a picture mascot's drawn talk frame does not flash for one frame). Neighbours a step away stay a
+    step away."""
+    out = list(vals)
+    for f in range(1, len(out) - 1):
+        a, c = out[f - 1], out[f + 1]
+        if out[f] == 0 and a > 0 and c > 0:
+            out[f] = min(a, c)
+        if (a >= TALK_FRAME) == (c >= TALK_FRAME) != (out[f] >= TALK_FRAME):
+            out[f] = max(a, c) if out[f] >= TALK_FRAME else min(a, c)
+    return out
+
+
+def frames_of(m, plan, s, geo, opens, fps, speaks=None, wides=None):
+    """The per-frame plan the kit plays: entries {f, pose, prev, k, open, wide, blink, lid[, since][, facing]}, each
+    holding
+    until the next one (an entry is written only where a value changes). wide 0..1: the mouth round .. wide, 0.5
+    where it does not speak; lid 0..1: how shut the eyes are; blink: at
+    least half shut (a module that draws only open or shut eyes); since: the frames since a pose change began, while
+    it eases and LAG_TAIL frames more (absent once it has settled; the atlas swaps its pictures by it); ease: how
+    the change moves (change_mode), next to since."""
+    t0, t1 = span(m, plan)
+    f0, f1 = jround(t0 * fps), jround(t1 * fps)
+    ch = changes(m, geo)
+    facing = -1 if m.get("facing") == -1 else 1
+    sp = speaks if speaks is not None else speaking(m, plan, len(opens) / float(fps))
+    start, _ = substitute("neutral", geo)
+    seen, last_pic = [], (start, False)
+    for c in ch:  # a change the viewer sees: another picture or a turn; a stand-in drawing the same pose is none
+        if (c[2], c[3]) != last_pic:
+            seen.append(jround(c[0] * fps))
+        last_pic = (c[2], c[3])
+    lids = lid_track(plan.get("id") or "", t0, t1, fps, seen)
+    # the spans are the sound's: frame f shows the window of frame g = f + MOUTH_LEAD (mouth.json moved it early),
+    # which speaks when it overlaps a span; whole frames, so no sum of seconds lands a frame off. Cut by the spans, the
+    # opening is paced again: a span that starts or ends inside speech opens and closes the mouth a quarter a frame
+    fr = range(f0, max(f0 + 1, f1))
+    talks = {f: 0 <= f < len(opens) and any(f + MOUTH_LEAD + 1 > a * fps + 1e-6 and f + MOUTH_LEAD < b * fps - 1e-6
+                                            for a, b in sp) for f in fr}
+    shown = dict(zip(fr, paced([opens[f] if talks[f] else 0.0 for f in fr])))
+    out, last = [], None
+    for f in range(f0, max(f0 + 1, f1)):
+        t = f / float(fps)
+        cur = [c for c in ch if jround(c[0] * fps) <= f]
+        since = None
+        if cur:
+            c = cur[-1]
+            fc = jround(c[0] * fps)
+            prev = cur[-2][2] if len(cur) > 1 else start
+            mode = change_mode(c[0], plan, s)
+            k = change_k(mode, f - fc)
+            pose, mir = c[2], c[3]
+            since = f - fc if f - fc <= change_frames(mode) + LAG_TAIL else None
+        else:
+            pose, prev, k, mir = start, start, 1.0, False
+        o = shown[f]
+        w = wides[f] if talks[f] and wides is not None and f < len(wides) and o > 0 else 0.5
+        lid = lids.get(f, 0.0)
+        e = {"pose": pose, "prev": prev, "k": round(k, 3), "open": round(float(o), 3), "wide": round(float(w), 3),
+             "blink": lid >= 0.5,
+             "lid": round(lid, 3)}
+        if since is not None:
+            e["since"] = since
+            e["ease"] = mode
+        if mir:
+            e["facing"] = -facing
+        if e != last:
+            out.append({"f": f, **e})
+            last = e
+    return out
+
+
+# ── follow the rough cut ──
+
+def follow(plan, cap):
+    """A re-cut: the mascot's poses placed on words move with them; a word that is gone is marked lost (validate
+    names it). -> the ids (at) that moved."""
+    moved = []
+    for it in (plan.get("mascot") or {}).get("track") or []:
+        at = str(it.get("at") or "")
+        if not (at.startswith("word:") or re.fullmatch(r"s\d+", at)):
+            continue
+        try:
+            t = round(resolve_at(at, plan, cap), 3)
+        except SystemExit as x:
+            it["lost"] = str(x)
+            continue
+        it.pop("lost", None)
+        if it.get("t") is None or abs(t - float(it["t"])) > 0.001:
+            moved.append(at)
+            it["t"] = t
+    return moved
+
+
+# ── the checks ──
+
+def keep_boxes(e, plan):
+    """What the mascot keeps clear of, with their times: the plan's zones (cards, presenters, callout labels), the
+    overlay/split/window scenes and the placed pop-up memes."""
+    out = [k for k in plan.get("keep_clear", []) if not k.get("mascot") and not k.get("scene")]
+    out += scene_keep_entries({**plan, "inserts": [{**i, "status": "ready"} if i.get("kind") == "scene"
+                                                   and i.get("status") == "planned" else i
+                                                   for i in plan.get("inserts", [])]})
+    if not any(k.get("callout") for k in out) and any(i.get("kind") == "callout" and i.get("status") == "ready"
+                                                      for i in plan.get("inserts", [])):
+        try:
+            from vp_callouts import callout_keep_entries
+            out += callout_keep_entries(e, plan)
+        except Exception:  # noqa: BLE001 - a callout that cannot be laid out is validate's own error
+            pass
+    for i in plan.get("inserts", []):
+        if i.get("kind") == "meme" and i.get("status") != "skipped" and i.get("box"):
+            out.append({"start": i["start"], "end": i["start"] + i["dur"], "box": i["box"], "what": f"meme {i['id']}"})
+    return out
+
+
+def issues(e, plan, s, doc, brand, bdir, fps=30):
+    """visual_plan.py validate's mascot checks -> (errors, warnings)."""
+    m = plan.get("mascot")
+    if not m:
+        return [], []
+    errs, warns = [], []
+    bt = s.get("brand_tone") or {}
+    if level(s) == "off":
+        msg = (f"mascot: the brand tone {bt.get('preset')} has no mascot (brand_tones.{bt.get('preset')}.mascot: off)")
+        if s.get("tone_override"):
+            warns.append(msg + " (tone_override: note it in the report)")
+        else:
+            errs.append(msg + " (to go past it on explicit request: reelcfg.py save ... --set tone_override=true)")
+    for it in m.get("track") or []:  # the track's own faults, whatever the brand's mascot is
+        if it.get("lost"):
+            errs.append(f"mascot: the pose {it.get('pose')} was placed on {it.get('at')}, which the re-cut removed "
+                        f"({it['lost']}): place it again (mascot.py plan ... --pose)")
+        if it.get("pose") not in POSES:
+            errs.append(f"mascot: unknown pose {it.get('pose')!r} (the dictionary: {', '.join(POSES)})")
+    geo, why = geometry(brand, bdir)
+    if not geo:
+        return errs + [f"mascot: {why}"], warns
+    D = float(plan.get("duration") or 0.0)
+    t0, t1 = span(m, plan)
+    if not (0 <= t0 < t1 <= D + 0.05):
+        errs.append(f"mascot: on screen {t0}-{t1} s, the video is {D} s")
+    for it in m.get("track") or []:
+        if it.get("pose") in POSES and it["pose"] not in geo["poses"]:
+            d, mir = substitute(it["pose"], geo)
+            warns.append(f"mascot: it has no pose {it['pose']}: {d}{' mirrored' if mir else ''} is drawn at "
+                         f"{it.get('t')} s")
+        if it.get("t") is not None and not (t0 - 1e-6 <= float(it["t"]) < t1):
+            warns.append(f"mascot: the pose {it.get('pose')} at {it['t']} s is outside its time on screen {t0}-{t1} s")
+    ch = changes(m, geo)
+    for a, b in zip(ch, ch[1:]):
+        if b[0] - a[0] < MIN_GAP_S - 1e-6:
+            errs.append(f"mascot: poses change at {a[0]} and {b[0]} s, {b[0] - a[0]:.2f} s apart: at most once per "
+                        f"{MIN_GAP_S} s")
+    mouth, problem = load_mouth(e, fps)
+    vend = voice_end(e, plan, mouth)
+    sp = speaking(m, plan, vend)
+    for a, b in sp:
+        if b <= a:
+            errs.append(f"mascot: speaks [{a}, {b}) is empty")
+        elif a < -1e-6 or b > vend + 1.0 / fps:
+            errs.append(f"mascot: speaks [{a}, {b}) runs past the narration (it is {vend:.2f} s"
+                        + ("" if voice_track(e) else ", no voice.wav or final.mp4") + ")")
+    if sp and voice_track(e) and problem:
+        warns.append(f"mascot: {problem}: run mascot.py mouth edit/{Path(e).name} (stage refuses it)")
+    band = subtitle_band(plan, s, doc)
+    safe = ui_safe_of(s, doc)
+    fulls = full_scenes(plan, t0, t1)
+    x, y, sc = placement(m, geo, band, safe, bool(fulls))
+    facing = -1 if m.get("facing") == -1 else 1
+    r = union([rect(x, y, sc, geo, facing)] + ([rect(x, y, sc, geo, -facing)] if any(c[3] for c in ch) else []))
+    # r is rounded outward to whole pixels: a pixel of rounding is not a collision
+    sides = [n for n, bad in (("left", r[0] + 1 < safe["left"]), ("top", r[1] + 1 < safe["top"]),
+                              ("right", r[0] + r[2] - 1 > W - safe["right"]),
+                              ("bottom", r[1] + r[3] - 1 > H - safe["bottom"])) if bad]
+    if sides:
+        errs.append(f"mascot {r}: in the UI zone ({'/'.join(sides)}; top {safe['top']}, bottom {safe['bottom']}, right "
+                    f"{safe['right']}, left {safe['left']} px): move or scale it (mascot.py plan --at x,y --scale k)")
+    if band and r[1] + r[3] - 1 > band[0] - BAND_GAP and r[1] < band[1]:
+        errs.append(f"mascot {r}: on the subtitle band {band} (its lowest point must stay {BAND_GAP} px above y "
+                    f"{band[0]}): mascot.py plan --auto-place, or a smaller --scale")
+    for k in keep_boxes(e, plan):
+        if k["start"] < t1 and k["end"] > t0 and hits(r, k["box"]):
+            errs.append(f"mascot {r}: over {k.get('what')} {k['box']} at {k['start']:.1f}-{k['end']:.1f} s")
+    scenes = [i for i in plan.get("inserts", []) if i.get("kind") == "scene" and i.get("status") != "skipped"
+              and i.get("type") != "cover"]
+    text_bottom = r[1] - SCENE_GAP  # a full scene's text ends here while the mascot is on (the kit's sceneStage)
+    for sc_ in fulls:
+        b = sc_.get("box")
+        if b and len(b) == 4:
+            # the kit cuts a full scene's box at text_bottom wherever it stands across the frame (sceneStage), so a
+            # box beside the mascot or ending inside the gap above it is cut too (Codex review): the same rule as the
+            # subtitles' (vp_scenes, voice_band)
+            if b[1] + b[3] > text_bottom:
+                errs.append(f"mascot {r}: under the box {b} of the full scene {sc_['id']}: while the mascot is on, a "
+                            f"full scene's text ends {SCENE_GAP} px above it (y {text_bottom}) and the kit cuts the box "
+                            f"there; end the box above y {text_bottom}, or lower the mascot")
+        elif text_bottom - FULL_TEXT_TOP < FULL_TEXT_MIN:
+            errs.append(f"mascot {r}: leaves the text of the full scene {sc_['id']} only {text_bottom - FULL_TEXT_TOP} "
+                        f"px (y {FULL_TEXT_TOP}-{text_bottom}, at least {FULL_TEXT_MIN}): lower it or a smaller --scale "
+                        f"(mascot.py plan --auto-place)")
+    for sc_ in scenes:
+        if sc_.get("mode") == "panel" and sc_["start"] < t1 and sc_["start"] + sc_["dur"] > t0:
+            warns.append(f"mascot: drawn over the panel scene {sc_['id']}: textcheck.py measures its text "
+                         f"against the mascot (text on the mascot is an error)")
+        for edge, name in ((sc_["start"], "entrance"), (sc_["start"] + sc_["dur"], "exit")):
+            for c in ch:
+                if abs(c[0] - edge) <= EDGE_S + 1e-6:
+                    warns.append(f"mascot: the gesture {c[1]} at {c[0]} s is {abs(c[0] - edge):.2f} s from the "
+                                 f"{name} of scene {sc_['id']} ({edge:.2f} s): two moves at once; move it "
+                                 f"{EDGE_S} s or more away")
+    return errs, warns
+
+
+# ── stage ──
+
+def atlas_rig(brand, bdir, staged_mascot, rem):
+    """rig.json of the brand's atlas mascot, its content: the kit reads no files while it renders (AtlasMascot.tsx), so
+    stage hands it the rig itself. The rig and the atlas image go as one pair: the copy brand.py stage put in public/
+    next to the image, and the brand folder's rig must still be the same (an atlas cut again without brand.py stage
+    would put the new frames over the old image). -> (rig, None) or (None, why)"""
+    m = (brand or {}).get("mascot") or {}
+    src = load_json(brand_file(m.get("rig"), bdir), None) if bdir else None
+    if rem is None:  # no Remotion project known (a check outside stage): the brand's rig as it is
+        return src, None
+    staged = load_json(Path(rem) / "public" / str(staged_mascot.get("rig") or ""), None)
+    if not isinstance(staged, dict):
+        return None, (f"the staged atlas rig public/{staged_mascot.get('rig')} is missing: run brand.py stage "
+                      f"{brand.get('slug')} --remotion {rem}")
+    if src != staged:
+        return None, (f"the brand's atlas changed since brand.py stage (rig.json differs from the copy in public/): "
+                      f"run brand.py stage {brand.get('slug')} --remotion {rem}")
+    return staged, None
+
+
+def props_of(e, plan, s, doc, brand, bdir, staged, fps=30, rem=None):
+    """props.mascot for the kit, or (None, why) when it cannot be staged."""
+    m = plan.get("mascot")
+    geo, why = geometry(brand, bdir)
+    if not geo:
+        return None, why
+    sm = (staged or {}).get("mascot")
+    if not isinstance(sm, dict) or sm.get("kind") != geo["kind"]:
+        return None, (f"src/brands/{plan.get('brand')}.json has no {geo['kind']} mascot: run brand.py stage "
+                      f"{plan.get('brand')} --remotion <Remotion project>")
+    rig = None
+    if geo["kind"] == "atlas":
+        rig, why = atlas_rig(brand, bdir, sm, rem)
+        if rig is None:
+            return None, why
+    mouth, problem = load_mouth(e, fps)
+    vend = voice_end(e, plan, mouth)
+    sp = speaking(m, plan, vend)
+    if sp and (problem or not mouth):
+        return None, f"{problem or 'no mouth.json'}: run mascot.py mouth edit/{Path(e).name} first"
+    opens = (mouth or {}).get("open") or []
+    wides = (mouth or {}).get("wide") or None
+    band = subtitle_band(plan, s, doc)
+    t0, t1 = span(m, plan)
+    x, y, sc = placement(m, geo, band, ui_safe_of(s, doc), bool(full_scenes(plan, t0, t1)))
+    facing = -1 if m.get("facing") == -1 else 1
+    out = {"kind": sm["kind"], "module": sm.get("module") or plan.get("brand"),
+           **{k: sm[k] for k in ("rig", "atlas") if sm.get(k)},
+           **({"rig": rig} if rig is not None else {}),
+           "x": x, "y": y, "scale": sc, "facing": facing, "from": t0, "to": t1,
+           "frames": frames_of(m, plan, s, geo, opens, fps, sp, wides)}
+    ch = changes(m, geo)
+    box = union([rect(x, y, sc, geo, facing)] + ([rect(x, y, sc, geo, -facing)] if any(c[3] for c in ch) else []))
+    out["top"] = box[1]  # a full scene's text ends SCENE_GAP above it while the mascot is on (SceneLayer.tsx)
+    return out, box
+
+
+def stage_into(e, props, staged, rem=None):
+    """visual_plan.py stage: props.mascot, resolved against the subtitle band this stage recorded; its box goes into
+    the plan's keep_clear, so memes, scenes and faces.py audit keep clear of it. Refuses (exit) what it cannot stage."""
+    import sys
+    from vp_core import current_settings, editing_plan, load_plan
+    plan = load_plan(e)
+    s, _prov, doc, bdir, brand = current_settings(e, plan)
+    mp, box = props_of(e, plan, {**s, "subtitles": props.get("subtitles")}, doc, brand, bdir, staged,
+                       (doc.get("scenes") or {}).get("fps", 30), rem)
+    if not mp:
+        sys.exit(f"mascot: {box}; the template props are not written")
+    props["mascot"] = mp
+    with editing_plan(e) as p2:
+        keep = [k for k in p2.get("keep_clear", []) if not k.get("mascot")]
+        p2["keep_clear"] = keep + [{"start": mp["from"], "end": mp["to"], "box": box, "what": "mascot", "mascot": True}]
+    print(f"mascot: {mp['kind']} \"{mp['module']}\" at {mp['x']},{mp['y']} x{mp['scale']}, {mp['from']}-{mp['to']} s, "
+          f"{len(mp['frames'])} key frame(s); box {box} kept clear")

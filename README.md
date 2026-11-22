@@ -2,11 +2,11 @@
 
 # Rolex
 
-**A curated Claude Code toolkit for making Instagram Reels that look hand-made, not AI-made.**
+**A studio-grade Claude Code toolkit for premium Instagram Reels: from idea to finished MP4, the way film and anime studios work.**
 
-Motion graphics · photo-to-video · captions · sound design · editing · scripting
+Concept · script · storyboard · art direction · animation · sound · edit · QA
 
-`500+ skills` · `33 plugins` · `3 MCP servers` · one command
+`800+ skills` · `41 plugins` · `8 agents` · one command · free tools only by default
 
 </div>
 
@@ -48,7 +48,32 @@ Restart Claude Code afterwards.
 | `--dry-run` | Show what would happen, change nothing |
 | `--list` | List the packs |
 
-**Safe to re-run.** Nothing is deleted: any skill or agent it replaces is moved to `~/.claude/rolex-backup/<timestamp>/`. Plugins update in place.
+**Safe to re-run.** Nothing is deleted: any skill or agent it replaces is moved to `~/.claude/rolex-backup/<timestamp>/`. Plugins you already have from their original marketplace are kept as they are.
+
+---
+
+## Start a video
+
+After installing, tell Claude:
+
+```text
+Use reel-production to make a 30-second Reel about <your idea>.
+```
+
+The `reel-production` skill runs it like a studio and stops for your OK after each stage:
+
+| Stage | Who | Output |
+|---|---|---|
+| 1. Brief | Showrunner (main Claude) | `brief.md` |
+| 2. Script | `reel-writer` agent | Beat sheet, hook options, VO and on-screen text |
+| 3. Look | `reel-art-director` agent | Visual bible, palette, type, colour script, engine choice |
+| 4. Storyboard | `reel-storyboard-artist` agent | `shots.json` + HTML board: framing, camera, timing, transitions |
+| 5. Build | Showrunner | Animation in the chosen engine |
+| 6. Sound | Showrunner | SFX, music, voice, beat sync |
+| 7. Edit + QA | `reel-editor-qa` agent | Frame-checked fixes until it passes |
+| 8. Deliver | Showrunner | 1080×1920 MP4, cover, caption |
+
+Everything lands in `production/<slug>/`, and the series bible in `bible/` keeps characters and style consistent across episodes.
 
 ---
 
@@ -58,9 +83,10 @@ Only `core` installs by default. The rest are opt-in so overlapping skills don't
 
 | Pack | Contents | Install when |
 |---|---|---|
-| **core** | 110 skills, 11 plugins, 4 agents, papercut pipeline, Playwright MCP | Always. This is the Reels stack. |
-| **ai** | Remotion Superpowers + VibeFrame MCP | You want AI voice, music and image-to-video. Paid APIs, billed per clip. |
-| **blender** | 94 Blender skills + Blender MCP | You render 3D in Blender. |
+| **core** | 135 skills, 16 plugins, 8 agents, papercut pipeline, Rev2D puppet MCP, Playwright MCP | Always. This is the studio. |
+| **genai** | ComfyUI (local WAN/LTX image-to-video, lip-sync, interpolation) + claude-code-video-toolkit (open models on Modal's free monthly credit) | Free AI video. ComfyUI needs an NVIDIA GPU with 12 GB+ VRAM. |
+| **ai** | Poppify, Remotion Superpowers, VibeFrame | **Paid** APIs, billed per clip. |
+| **blender** | 95 Blender skills (incl. claymation), Blender agent skills plugin + Blender MCP | You render 3D in Blender. |
 | **resolve** | 12 DaVinci Resolve editing skills | You edit in Resolve Studio. Non-commercial licence. |
 | **noncommercial** | `anything2explainer` | Personal projects only. |
 | **social** | LinkedIn, TikTok, YouTube, X, Threads, Facebook plugins | You post beyond Instagram. |
@@ -73,6 +99,10 @@ Only `core` installs by default. The rest are opt-in so overlapping skills don't
 ### 1. Idea, script and hook
 | Skill / plugin | Use it for |
 |---|---|
+| `creative-director` | Concept and big idea before any script |
+| `screenwriting` (plugin, 26 skills) | Story structure, scene craft, series engine and bible, episode arcs |
+| `social-short-production` | Short-form structure grounded in real platform metrics |
+| `manjuforge` | Series memory: story bible, foreshadowing, 22 consistency checks across episodes |
 | `papercut-*` (9 skills) | Full zero-to-reel pipeline: strategy → hook → script → storyboard → voice → build → QA, with 79 SFX and 8 music beds |
 | `social-media-skills` (plugin) | Hooks, Reels scripts, storyboards, captions, hashtags, trend-jacking, Kling / Runway / Veo / Luma prompts |
 | `instagram-skills` (plugin) | Instagram-specific growth, Reels and carousel writing |
@@ -80,11 +110,21 @@ Only `core` installs by default. The rest are opt-in so overlapping skills don't
 | `reference-to-motion`, `video-shotcraft` | Break down a reference video and rebuild its shots |
 | `brand-intake`, `motion-art-direction` | Lock brand, palette, type and motion rules before animating |
 
-### 2. Motion graphics that don't look AI
+### 2. Storyboard, direction and art direction
+| Skill / plugin | Use it for |
+|---|---|
+| `visual-skills` (plugin) | Direction-first storyboards: Rule of Six, 14-field shot cards, rhythm, animatic keyframes |
+| `cinematic-director` | Director's book, blocking, coverage, continuity bible, match cuts, lenses of 20 directors |
+| `shotkit` (plugin) | shots.json storyboard, brand lock, visual critic, HTML board |
+| `storyboard-previsualization`, `cinematic-shot-direction`, `editing-montage` | Shot lists, camera language, cutting rhythm |
+| `lighting-direction`, `visual-style-direction`, `production-design-direction`, `character-design-continuity` | Lighting, style, sets and on-model characters |
+| `anime-mv-art-direction`, `anime-animation-production`, `music-video-production` | Anime and MV art direction: colour scripts, motif systems, beat-matched shot lists |
+
+### 3. Motion graphics that don't look AI
 | Skill / plugin | Use it for |
 |---|---|
 | `animation-skills` (plugin) | 11 finished reel styles in code: stick-figure, 3D explainer, map route, low-poly, Kurzgesagt-style |
-| `kinetic-reel`, `painted-animation` (plugins) | Kinetic-type reels and hand-painted watercolour reels, beat-cut to a generated score |
+| `kinetic-reel` (plugin: kinetic-reel + painted-animation skills) | Kinetic-type reels and hand-painted watercolour reels, beat-cut to a generated score |
 | `hyperframes-motion-reel` | Showreel-grade, beat-synced reel from a one-line theme |
 | `remotion` (plugin), `remotion-video` | React-based video, frame-exact, renders to MP4 |
 | `hyperframes` (plugin) | HTML/CSS/GSAP compositions rendered to video |
@@ -94,9 +134,14 @@ Only `core` installs by default. The rest are opt-in so overlapping skills don't
 | `kinetic-typography`, `caption-animation`, `lower-thirds`, `title-sequence-3d`, `logo-animation` | Type-driven story videos |
 | `explainer-*`, `vox-explainer`, `whiteboard-animation`, `animated-infographic`, `chart-animation`, `diagram-animation` | One-story explainers |
 | `launch-video`, `apple-launch-film`, `ad-creative-video`, `testimonial-video`, `wrapped-video`, `countdown-video` | Product, ad and announcement formats |
-| `threejs-*`, `anatomy`, `isometric-animation` | 3D and isometric scenes in code |
+| `threejs-*`, `anatomy`, `isometric-animation`, `shader-glsl`, `particle-system` | 3D, shaders, particles, isometric scenes in code |
+| `animation-styles` | 39 hand-made looks in code: cel, paper, ink, and more |
+| `what-if-animation`, Rev2D (MCP), `line-art-animation` | Character stories: rigged cast, 2D puppets with bones and lip-flap, ink walk cycles |
+| `vocaloid-style-mv` | Anime lyric MVs, beat-locked, 9:16 |
+| `manim-skill` (plugin), `motion-canvas`, `explainer-studio` (plugin) | 3b1b-style math, Motion Canvas, 8 hand-drawn explainer styles |
+| `lottie-animation`, `svg-animation`, `rive-mcp` (plugin), `pixelfx` (plugin) | Lottie, SVG, Rive state machines, 244 pixel-art effects |
 
-### 3. One photo → short video
+### 4. One photo → short video
 | Skill / plugin | Use it for |
 |---|---|
 | `perspective-illusion`, `pixel2motion`, `colorize`, `fisheye-motion` | Animate a still: parallax, pixel motion, colour, lens moves |
@@ -106,14 +151,14 @@ Only `core` installs by default. The rest are opt-in so overlapping skills don't
 | [DepthFlow](https://github.com/BrokenSource/DepthFlow) (`--tools`) | Free, local 3D parallax from one photo; no AI look, no watermark |
 | `ai` pack → VibeFrame | Seedance, Kling, Runway, Veo, Grok image-to-video with a hard spend cap |
 
-### 4. Captions, voice and sound
+### 5. Captions, voice and sound
 | Skill | Use it for |
 |---|---|
 | `sound-effects` | Beat-synced SFX pass, mixed to -16 LUFS, CC0 library included |
 | `beat-sync-editing` | Cut on the beat |
 | `ffmpeg-skill`, `reels-editor`, `video-short` | Whisper transcription and burned-in captions |
 
-### 5. Edit, polish and export
+### 6. Edit, polish and export
 | Skill / plugin | Use it for |
 |---|---|
 | `video-use`, `it-reelsmaker` (plugin) | Edit raw footage into a reel |
@@ -158,4 +203,4 @@ Some plugins call paid services (Poppify, ElevenLabs, Kling, Runway). They ask f
 
 ## Licences
 
-Every skill belongs to its author. See [SOURCES.md](SOURCES.md) for credits and licences. Two packs (`resolve`, `noncommercial`) are **non-commercial only**: don't use them for paid or brand work without the author's permission. The 17 `vibe-motion` skills and all plugins are downloaded from their authors at install time, not stored here. The installer and docs are MIT ([LICENSE](LICENSE)).
+Every skill belongs to its author. See [SOURCES.md](SOURCES.md) for credits and licences. Two packs (`resolve`, `noncommercial`) are **non-commercial only**: don't use them for paid or brand work without the author's permission. Everything (skills, plugins, the papercut pipeline) is stored in this repo, so installs keep working even if an author deletes their repo. The installer and docs are MIT ([LICENSE](LICENSE)).

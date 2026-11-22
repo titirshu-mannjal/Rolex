@@ -51,6 +51,7 @@ place() {
 
 HAVE_CLAUDE=0; command -v claude >/dev/null && HAVE_CLAUDE=1
 [ $HAVE_CLAUDE -eq 0 ] && echo "! 'claude' CLI not found: skills will be copied, plugins and MCP servers skipped. Install Claude Code, then re-run."
+HAVE_PLUGINS=" "; [ $HAVE_CLAUDE -eq 1 ] && HAVE_PLUGINS=" $(claude plugin list </dev/null 2>/dev/null | sed -n 's/^ *❯ *\([^ ]*@[^ ]*\).*/\1/p' | tr '\n' ' ')"
 WORK="$(mktemp -d)"; DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/rolex"; ADDED_MKT=" "   # bash 3.2 (macOS) has no associative arrays
 
 run mkdir -p "$CLAUDE_DIR/skills" "$CLAUDE_DIR/agents"
@@ -66,26 +67,24 @@ for pack in "${PACK_LIST[@]}"; do
         place "$SRC/skills/$a" "$CLAUDE_DIR/skills/$a" && ok=$((ok+1)) || failed+=("skill $a") ;;
       agent)
         place "$SRC/agents/$a" "$CLAUDE_DIR/agents/$a" && ok=$((ok+1)) || failed+=("agent $a") ;;
-      upstream)
-        # Skills without a redistribution licence are fetched from their author's repo, not copied from here.
-        d="$WORK/$(printf '%s' "$a" | tr -c 'A-Za-z0-9' '_')"
-        [ -d "$d" ] || git clone --depth 1 -q "$a" "$d" </dev/null || { failed+=("clone $a"); continue; }
-        dest="${rest:-$b}"   # optional 4th field renames, e.g. a SKILL.md at repo root (".")
-        if [ -f "$d/$b/SKILL.md" ]; then
-          if [ "$b" = "." ]; then run mkdir -p "$WORK/root"; rm -rf "$WORK/root/$dest"; cp -R "$d" "$WORK/root/$dest"; rm -rf "$WORK/root/$dest/.git"; place "$WORK/root/$dest" "$CLAUDE_DIR/skills/$dest"
-          else place "$d/$b" "$CLAUDE_DIR/skills/$dest"; fi && ok=$((ok+1))
-        else failed+=("upstream $dest"); fi ;;
-      repo)
-        # Tools that need their own checkout (a library next to the skills): clone/update, then run the author's installer.
+      setup)
+        # Run a one-time setup (e.g. npm install) inside an installed skill folder.
+        if [ $DRY -eq 1 ]; then echo "  [dry-run] (cd skills/$a && $b $rest)"; ok=$((ok+1))
+        elif (cd "$CLAUDE_DIR/skills/$a" && bash -c "$b $rest") </dev/null >"$WORK/setup-$a.log" 2>&1; then echo "  + setup $a"; ok=$((ok+1))
+        else cp "$WORK/setup-$a.log" "$CLAUDE_DIR/rolex-setup-$a.log" 2>/dev/null; failed+=("setup $a (log: $CLAUDE_DIR/rolex-setup-$a.log)"); fi ;;
+      bundle)
+        # Tools that need their own folder (a library beside the skills): copy from tools/ and run their installer.
         dir="$DATA_DIR/$b"
-        if [ -d "$dir/.git" ]; then run git -C "$dir" pull -q --ff-only </dev/null || true
-        else run mkdir -p "$DATA_DIR"; run git clone --depth 1 -q "$a" "$dir" </dev/null || { failed+=("clone $b"); continue; }; fi
+        run rm -rf "$dir"; run mkdir -p "$DATA_DIR"; run cp -R "$SRC/tools/$a" "$dir"
         if [ $DRY -eq 1 ]; then echo "  [dry-run] (cd $dir && $rest)"; ok=$((ok+1))
         elif (cd "$dir" && bash -c "$rest") </dev/null >"$WORK/$b.log" 2>&1; then echo "  + $b"; ok=$((ok+1))
         else cp "$WORK/$b.log" "$CLAUDE_DIR/rolex-$b-install.log" 2>/dev/null; failed+=("$b (log: $CLAUDE_DIR/rolex-$b-install.log)"); fi ;;
       plugin)
         [ $HAVE_CLAUDE -eq 1 ] || { skipped=$((skipped+1)); continue; }
         mkt="${b#*@}"
+        # Same plugin already installed from its original marketplace: keep it, so skills don't load twice.
+        case "$HAVE_PLUGINS" in *" ${b%@*}@"*) case "$HAVE_PLUGINS" in *" $b "*) ;; *) echo "  = plugin ${b%@*} (already installed)"; continue ;; esac ;; esac
+        [ "$a" = "@rolex" ] && a="${ROLEX_MARKETPLACE:-titirshu-mannjal/Rolex}"   # this repo is the marketplace
         case "$ADDED_MKT" in *" $mkt "*) ;; *)
           run claude plugin marketplace add "$a" </dev/null >/dev/null 2>&1 || true   # already added is fine
           ADDED_MKT="$ADDED_MKT$mkt " ;;

@@ -1,0 +1,38 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__(plugin_remotion-superpowers_)?remotion-media__generate_(image|video_from_text|video_from_image|sound_effect|music|speech)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/check-mcp-server.sh\" remotion-media KIE_API_KEY",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^mcp__(plugin_remotion-superpowers_)?Pexels__pexels_(search_photos|search_videos|get_photo|get_video)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/post-tool-note.sh\" pexels-attribution",
+            "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/post-tool-note.sh\" captions-tip",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "poppify",
+  "displayName": "Poppify",
+  "description": "Make reels worth sharing — the AI video generator and reels maker for Instagram, TikTok, YouTube Shorts and Facebook, driven from your AI assistant. Give it 1–10 photos or just a topic and get back a captioned 9:16 reel: Live Motion that animates the subject inside a still, AI-generated scenes you don't already have, cinematic camera moves, AI voiceover and music, all assembled into one edit and published to your channels. 12 MCP tools, one meaning each, covering plan, generate, edit, render, schedule and publish. $0.06 base render; 50 free seeds on signup, up to 150 once you connect a social account; no subscription. Bundles HTTP MCP (12 tools) + 7 skills + 3 slash commands.",
+  "author": {
+    "name": "Poppify",
+    "email": "admin@poppify.ai"
+  },
+  "homepage": "https://poppify.ai",
+  "repository": "https://github.com/Poppify/poppify-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "video",
+    "reel",
+    "social",
+    "creative",
+    "poppify",
+    "photo-to-video",
+    "vertical-video",
+    "instagram-reels",
+    "tiktok",
+    "youtube-shorts",
+    "facebook-reels",
+    "ai-video-generator",
+    "reels-maker",
+    "ai-reels-maker",
+    "live-motion"
+  ]
+}

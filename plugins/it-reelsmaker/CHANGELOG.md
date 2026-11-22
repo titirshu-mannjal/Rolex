@@ -1,0 +1,1009 @@
+# Changelog
+
+What changed in IT Reelsmaker, written for the people who use it. The newest version is on top. The skill shows a short “What's new” note from this file once, on the first edit after an update.
+
+## 1.40.0
+
+- **No repeated frame where your picture meets the speaker.** In a video with a picture of its own, the speaker's
+  shots between your clips sometimes began with a copy of their second frame (and lost the first): the start was
+  rounded to a millisecond, past the frame. They now start on the exact frame.
+- **A short music track fades out.** Under a voice, a track that ends before the video stopped dead mid-speech; it now
+  fades out at its own end, and the master says the track is shorter than the video (as it did without a voice).
+- **Long cuts on Windows.** A cut of about 190 pieces or more failed: the sound join went past the Windows
+  command-line limit. It now joins in batches, whatever the number of pieces.
+- **Transcripts.** `transcribe.py check` refuses times written as text (`"1.2"`), which used to pass and then break
+  the cut, and names a file that is not a transcript instead of a traceback. `--model` and `--language` are no longer
+  answered with “cached” when the saved transcript was made with another model or language.
+- **Footage search.** `--min-dur` now holds for your project footage and your libraries too, not only online; a
+  shorter index no longer leaves old contact sheets showing files that are gone; a grayscale video in a library is
+  no longer marked transparent.
+- **Clearer errors.** A recut that removes the word an insert is placed by now names that insert and leaves the plan
+  as it was. A typo in `--box`, `--cam`, `--own-face`, `--at`, `--slot` or a `field=value` pair is named, not a
+  traceback. `brand.py change lut.hald=…` works on a brand whose `lut` is empty.
+- **Files from other tools.** JSON saved with a BOM (Notepad, PowerShell) is read; subtitles in UTF-16 are imported,
+  and ones in Windows-1251 are refused with a note instead of arriving as question marks. Tags written as one string
+  in a meme's sidecar (`"tags": "cat, fail"`) are two tags, not letters.
+- **Small things.** A generated clip with `use_from: 0` starts at its first frame. A bare video id (`4821`) finds
+  `edit/4821` even when a folder of that name sits in the project. A series clip whose extract stopped halfway gets
+  the series' settings on the next run. When your project's kit is newer than the plugin, doctor says to update the
+  plugin (it used to point at `kit.py update`, which refuses).
+- **Kit 1.24.0** (`kit.py update`): the subtitles hide on exactly the frames a scene plays (`sceneFrames` in
+  `kit/series.ts`): a scene that did not start on a whole frame showed one frame of subtitle over its field.
+- **Product scenes.** A tap with no time of its own now waits for the screen to slide in (stage wrote the scene's
+  start, and the tap came on the 8th frame while the screen was still moving).
+- **Docs.** The mascot atlas command is `mascot_atlas.py atlas`, a scene is added with `visual_plan.py add --kind
+  scene`, and the “Bar” subtitles take up to 4 words.
+
+## 1.39.0
+
+- **`--set voice=none` saves “no voice”.** Every `none`, `no`, `off`, `0` or `1` given with `--set` (and with
+  `brand.py change`) became empty, false or true, whatever the setting: `voice=none` and `music.source=none` saved no
+  choice, `subtitles_lang=no` (Norwegian) saved `false`, `corner_last_s=1` saved `true` and showed no corner logo, and
+  `colors.accent=111111` saved a number that `brand.py show` could not read. Now only an on/off setting (`use_*`,
+  `tone_override`) takes yes/no, on/off, 1/0; `null` clears a field; anything else is its value, a colour stays text, a list or an object of colours
+  (`colors.speakers='["#F7F9FB","#8FDCDD"]'`) stays JSON.
+- **B-roll and memes placed by a word move with it.** After a rebuilt rough cut, scenes followed their words, while a
+  B-roll or a meme added with `--at word:…` stayed on the old second. They keep their word now, `--offset` too.
+- **Words with punctuation or accents are found.** `--at word:don't`, `word:50%` or `word:$100` found no word, and
+  letters outside the English and Russian alphabets (ü, é, ş) cut a word in two: a 4-word German hook was refused as
+  longer than 6 words and the reading time was wrong.
+- **Rights from a meme's sidecar added later are read.** The first `memes.py index` wrote `rights: unknown`, and a
+  `.json` next to the meme added after it never got in. A rights edit made with `memes.py change` still wins.
+- **A music drop that cannot land is refused.** `--drop-at` later than `--drop-in-track` started the track at 0 s and
+  put the drop seconds early with no word; one of the two flags alone was ignored. Both are errors now, nothing written.
+- **Subtitles stay above a taller app UI.** A project's own UI zone (`reel-defaults.json → meme_layout.safe`, a
+  taller bottom for TikTok) was read by the checks, while the subtitles were placed by the kit's 420 px. Stage now
+  lifts them above it; the kit's designed scenes keep their own zone, and stage says so when it differs.
+- **doctor checks what the scripts need from ffmpeg and Remotion.** Frame picks, the cover and the trackers pass
+  `-fps_mode`, which came in ffmpeg 5.1 (Ubuntu 22.04 has 4.4): doctor now names an older ffmpeg as missing. A
+  project on an older Remotion than the one the kit is checked with is named by doctor and by `kit.py update`, with the
+  command that updates it.
+
+## 1.38.2
+
+- **Faces are found in a folder with a non-Latin name.** On Windows, OpenCV could not open a frame or the face model
+  in a folder with Cyrillic or other non-Latin letters (a user name like that puts the temp folder there), and every
+  frame read as “no face”: the video counted as a voice-over, text and subtitles could go over the face, and the
+  picture check said there was nothing to check. Frames and the model are now read from their bytes; a frame that
+  does not decode stops the check with its name instead of passing as empty.
+- **A comment CTA needs its code word.** `visual_plan.py validate` passed a comment CTA with one line, no quoted word
+  and no `interaction.text`, and the render stopped on that scene. It is now an error that says where to put the word.
+
+## 1.38.1
+
+- **Wording.** With the online-sources add-on linked, the “no footage” question also names the add-on's own narration
+  option, by the add-on's rules.
+
+## 1.38.0
+
+- **Is the footage usable? `picture.py scan` says where to look.** Before the shots of a voice-over or a no-speech
+  reel are picked, it scans the clips (a folder, one clip, `--window` for a stretch of a long one, or `--edit` for a
+  video's own sources) and lists hints: the camera shakes (a clip from the hand), the picture is restless though the
+  camera stands, an editing app's tail at the end, black or frozen frames, dark and overexposed stretches,
+  speech-like sound in the clip's own sound (lips that would not match a voice-over; "speaking to the camera" when a
+  face faces it), a face turning to the camera, more faces than usual (strangers?). Every hint has its reason and
+  the status "unchecked": nothing is excluded, no project file changes. What it could not judge is listed as not
+  assessed (a sky without detail, faces too small, no face model, no sound). With `--edit`, every hint also gets the
+  seconds of the finished video where that stretch is on screen (each shot's start and speed, a clip used twice is
+  on screen twice), and a strangers hint the window a full scene must hide. Frames are decoded at 480 px straight
+  into the script, no images on disk; measurements are kept, so a second scan is instant.
+  `references/no-speaker.md`, "Is the footage usable".
+- `defects.py`'s head turn measure is one function (`turn_state`) that the scan shares; its results do not change.
+
+## 1.37.0
+
+- **iPhone photos in HEIC are read.** A HEIC or HEIF photo is now footage like a JPEG: the index lists it with its
+  upright size, the contact sheet shows it upright, and it works as a picture shot, a B-roll photo and a scene's
+  screenshot. The scripts make an upright JPEG of it once, in `_footage_index/heic/`, and use that; the scene gets the
+  JPEG, since the browser that renders the video shows no HEIC. This needs ffmpeg 7.1 or newer; an older ffmpeg, or a
+  photo cut off mid-copy, stops with the photo's name and the way out (export it as JPEG), never with one tile of it.
+- **The cover of a no-speech reel is its hook.** `poster.py pick` took the first scene drawn as a hook, which in a
+  no-speech reel can be the rubric label, and timed the frame to "pauses of the speech" that were gaps in the music.
+  It now takes the script's hook block, whatever it is drawn as, at the middle of its settled window, and nothing is
+  timed to speech: no "on speech" marks on the sheet, no mid-word warning for `--t`.
+
+## 1.36.1
+
+- **Wording.** The no-speaker and music guides no longer state that speech is never synthesized: with no voice,
+  the plugin offers a voice note recorded on the phone or a no-speech reel, as before.
+
+## 1.36.0
+
+- **A series' corner logo shows at the end of a no-speech reel.** The logo of the last seconds (`corner_last_s`) was
+  drawn under the scenes, and the punchline's field covered it. It is now drawn above them; the corner logo of a
+  talking head still fades out under a scene as before.
+- **Changing the ending after the music is made no longer goes round in circles.** When a stage takes the end card or
+  sting off (or adds one) after `music.py` made the music, its refusal names the music for the new ending:
+  `music.py --edit edit/<id> --end none` (or `card`, `sting`), and the next stage goes through. Before, the command it
+  named made the old length again.
+- **`transcribe.py rate` measures a narration.** A cut of a voice recording alone (its `voice.wav`, no `final.mp4`)
+  was refused with "build the rough cut first".
+- **Kit 1.23.0** (`kit.py update`): `cornerAbove` in `kit/series.ts`, the persistent corner logo above the scene
+  layer in `ReelKit.tsx`.
+
+## 1.35.0
+
+- **Photo reels.** Photos under a voice-over or in a no-speech reel can name their subject: `"roi": [x0, y0, x1, y1]`
+  (read off the contact sheet) or `"roi": "face"` (every face on the photo, a group as one box). A push then ends on
+  the subject with room around it, as deep as the photo's pixels allow; a pull opens from it; a still frame centers
+  it; a pan travels along a group or a panorama. The whole move is checked frame by frame before anything is
+  encoded: a subject that cannot stay in frame stops `cut.py` with numbers and the ways out.
+- **A phone photo is upright everywhere.** A photo stored sideways or mirrored with an orientation tag looks the same
+  on the contact sheet, in the sizes, in the video and in the face search, whatever your ffmpeg does with the tag.
+  Before, the contact sheet could show it sideways while the video showed it upright, and a focus picked on the sheet
+  missed. HEIC is not read: export JPEG.
+- **Scenes frame the photo's subject.** A `panel` or `window` scene over a photo with a subject frames the subject,
+  not a default face.
+- **A small photo is shown whole** on a blurred background, with a warning, instead of being enlarged until it is
+  soft; `"fit": "cover"` keeps the old way.
+- **No slideshow.** `cut.py` and `validate` warn about three photos in a row with the same motion, or four with no
+  photo held longer than the rest.
+
+## 1.34.0
+
+- **A drawn mascot's gesture plays like acting, not like a hinge.** Its parts can now follow a pose change at their
+  own pace: the eyes move first, the head a frame later, the arms two frames later, the forearms and hands a frame after that. The
+  sample mascot shows it with the new `poseAtLagged` helper; a module written before moves every part together, as
+  it did.
+- **Loud moments click, calm ones ease.** With a full mascot and a loud scene tone (`punchy`, `hype`, `parody`) a
+  pose change clicks into place in two frames and holds; where the brand tone allows overshoot it then swings past
+  the pose and back, a small wobble that fades in half a second. A calm mascot eases out over 12 frames as before.
+- **Kit 1.22.0** (`kit.py update`): the mascot's frame gets `ease` (how the change moves) and `kLag` (its progress
+  for a part that lags), and `since` runs four frames past the change. Stage the video again to use them; a plan
+  staged before plays as it did.
+
+## 1.33.0
+
+- **The mascot's mouth no longer jumps on a tight cut.** On a real narration with its pauses cut out, the 1.32.0 mouth
+  jumped more than before: every step of a third read as a jump, and a level held for two frames then caught up two
+  levels at once. The opening now moves in quarters, a quarter a frame at most, starting to close early enough to be
+  shut when the sound stops. On a 25 s tight-cut recording: frames where the opening jumps by more than 0.3 went from
+  23 % (1.31.0) and 39 % (1.32.0) to none; the mouth never shuts for a single frame (21 and 4 times before); a
+  picture mascot's drawn talk frame no longer flashes for one frame (23 and 4 times before). It still opens a frame
+  before the sound and follows the voice's loudness a little more closely than 1.32.0, but travels about a sixth less
+  per syllable. Speaking spans set by hand (`--speaks`) open and close the mouth at the same pace.
+- **Ordinary speech is no longer mostly round.** A consonant's hiss pulled the width's scale and turned the open “a”,
+  the commonest vowel, round: on the same recording the mouth was round on 63 % of its open frames. The scale is now
+  set on the vowels only: there it is round on none, neutral on 74 %, wide on 26 %. The width measure tells a real
+  voice's vowels apart only roughly, so expect it near neutral most of the time.
+- **The noise floor is measured on a transcribed recording with no pauses**, on its quietest short moments (a stop's
+  closure, a breath), instead of falling back to a fixed −50 dBFS: `mouth.json` shows it with `floor_from`.
+- **Measure the mouth again** (`mascot.py mouth`) for a video staged before: stage asks for it. No kit update.
+
+## 1.32.0
+
+- **The mascot's mouth reads as speech.** Besides opening with the loudness of your voice, it gets wider on an “ee”
+  and rounder on an “oo”, measured from the sound of your own recording: no transcript and no phonemes, so it works
+  in any language, for a low and a high voice alike. The opening now steps through four levels and holds each for two
+  frames, so it no longer flutters, and it opens a frame before the sound, which reads as on time.
+- **It talks and keeps its expression.** The pose sets the mouth (a smile in `celebrate`, doubt in `shrug`) and the
+  voice opens it: the corners stay where the expression put them. The sample mascot shows it with the new
+  `mouthPath` helper; a picture mascot's overlay mouth gets wider or rounder too.
+- **Measure the mouth again** (`mascot.py mouth`) for a video staged before: stage asks for it.
+- **Kit 1.21.0** (`kit.py update`): the mascot's frame gets `wide`; `mouthPath` in `kit/mascot/rig.ts`. A module
+  written before keeps working (it ignores `wide`).
+
+## 1.31.0
+
+- **The mascot blinks like a living character.** A blink now closes and opens through a half-shut lid (half shut,
+  shut, shut, half shut) instead of snapping shut for three frames, and about one blink in five is a double blink.
+  The pace stays human, every 2.6–4.6 s, and the same video gets the same blinks at every render.
+- **A pose change of a picture mascot no longer looks like a jump cut.** The mascot blinks over every pose change,
+  and the picture is swapped with a two-frame cross-fade while its eyes are shut; a drawn blink frame now
+  shows half over the open picture on the half-shut frames. A drawn mascot blinks over its
+  pose changes too. A planned blink keeps half a second away from that one, so it never blinks twice in a row.
+- **Kit 1.20.0** (`kit.py update`): the mascot's frame gets `lid` (how shut the eyes are) and `since` (the frames since a
+  pose change began, while it eases). A mascot module written before keeps working: it still gets `blink`, now on the frames the lids
+  are at least half shut. Draw half-shut eyes from `f.lid` to use the softer blink (the sample shows how).
+
+## 1.30.0
+
+- **A video without speech.** No voice at all: your silent shots, or a person on screen who does not speak, and the
+  brief's text on screen, word for word. Put the text into `script.json` (one block per line of the brief, with its
+  role: hook, label, translation, punchline...); `visual_plan.py script` times each block exactly as long as it takes
+  to read, `cut.py` lays the clips under the blocks (`"from": "block:label"`), and `visual_plan.py init --no-speech`
+  makes one scene per block. `validate` fails a word changed in the text, a block left out or shown twice.
+- **Sounds and music are always asked about** for such a video: effects on the events, and music composed in code,
+  your own licensed track, or a track picked in the app when publishing (then the video gets its sounds and the
+  report reminds you to pick the track).
+- **Music composed in code: `music.py`.** A track of exactly the video's length (the end card included), in four
+  styles that differ in instruments, rhythm and density (groove, pulse, tension, ambient without a marked beat), with
+  the tape stopping on a turn in the text, coming back lighter under the reading, and a "button" accent on the
+  punchline followed by silence for the reaction. The same request gives the same file; `--seed` gives another
+  arrangement. Its `beats.json` says which WAV it belongs to, where the beats are and which silences are meant; scenes
+  can land on beats (`--at beat:N`, `marker:button`), and reading always wins over the grid. Needs numpy
+  (`doctor.py` checks it).
+- **The master keeps −14 LUFS after the sound effects** (with music, the mix used to come out louder after the
+  effects), refuses music made for another length or another file, and refuses a licensed track that ends before a
+  video without speech. The code music's own silences are not "music ran out".
+- **Series marks:** a rubric label at the top (`reel.json -> rubric`) and the corner logo for the last seconds only
+  (`corner_last_s`), kept by a series preset together with the voice and the music.
+- A video without speech may end on its punchline, held for the reaction, with no call to action. A clip slowed under
+  ×0.75 gets a warning (the frames repeat).
+- **Kit 1.19.0** (`kit.py update`): the format comes in the props by name, the rubric label, the corner logo from a
+  given second.
+- New guide: `references/music.md`; the video without speech in `references/no-speaker.md`, its templates in
+  `references/structure.md`.
+
+## 1.29.3
+
+- **The mascot no longer stands on the scene text.** In scenes over your voice and in a promo, every scene fills the
+  frame and the mascot stands in its lower part: the kit now ends a full scene's text 40 px above the mascot, the
+  automatic placement leaves that text at least 540 px, and the plan check says so before the render when a mascot
+  placed by hand (or a scene's own box) leaves less. Found on a first real render: the check only warned, and the
+  text check found the words on the mascot after the storyboard.
+- **The sample mascot type-checks for every brand**, also one with extra colors in its profile.
+- **Kit 1.18.2** (`kit.py update`): full scenes keep their text above the mascot. Nothing else changes in your videos.
+
+## 1.29.2
+
+- **The first guess of a character's eyes lands on the drawn eyes.** `mascot_atlas.py` now finds the head as the
+  stretch above the shoulders and the eyes as the dark spots of the face, instead of a fixed share of the figure's
+  height; you correct less in `rig.json`.
+- **Kit 1.18.1** (`kit.py update`): the mascot's helpers, its breath and the atlas mascot's overlay mouth and eyelid
+  are drawn anew; the mouth's lower lip now drops with the opening. Nothing else changes in your videos.
+
+## 1.29.1
+
+- **No camera? The agent now offers it.** Ask for a video without filming and it asks one question: scenes over
+  your voice recorded on a phone, your voice over your own silent shots or photos, or a promo of scenes only. “A video from my voice note” starts the skill too.
+- **The brand mascot is offered where it fits:** in a video with no speaker on screen, a brand without a mascot
+  sees one item marked new (drawn in your colors, or your own character picture brought to life); never at the
+  premium tone, off unless you choose it. A new brand's summary mentions it in one line.
+- **A first run says what the plugin can do** in three lines, the no-camera videos included. After an update
+  across several versions, “What's new” shows the headline of each version instead of the first four points.
+
+## 1.29.0
+
+- **A voice-over over your own shots.** A voice note recorded on the phone (`.ogg`, `.opus`, `.m4a`, `.wav`, `.mp3`)
+  is the sound of the video, and silent wide shots, other clips and photos are its picture: the voice goes into
+  `ranges` as usual and the picture into a `picture` block of `cut.json`; one `cut.py` run builds `final.mp4`. No
+  black video under the voice, no second project for the picture, no gluing by hand.
+- **Part of a talking head can be voice-over** (head → voice-over → head): a `picture` block covers only that stretch,
+  and the video can end on a text over the background after the voice (the sound is padded with silence).
+- **Exact timing, no hidden tricks.** Shots cut on spoken words (`"until": "word:sea#1"`), in whole frames, with no
+  gaps; a clip shorter than its shot stops with the numbers ("needs 4.20 s, has 3.10 s") instead of a frozen frame.
+  A photo can stand still, push in, pull out or pan; the virtual camera stays off on a shot that moves by itself.
+- **Color per place.** A source can have its own `look` (an office and a sunset are not one balance); the white
+  balance measures the picture, never the voice, and the eyedropper on one place writes into that place.
+- **Strangers in the frame are a blocking check:** each wide shot says whether people who may not be shown are in it
+  and where; `validate` fails the video until a full scene hides them.
+- **The speaker's rules only over the speaker:** the insert budget, two full scenes in a row, the full hook's
+  1.5 s and the full-scene ceiling no longer count over a voice-over picture; reading time and the brand tone still do.
+- A recording with cover art (an `.m4a` or `.mp3` with a picture inside) is read as sound only. A long-form clip
+  folder with a voice-over picture is refused before anything in it changes.
+- **Kit 1.18.0** (`kit.py update`): the drift and scenes follow the picture track (a scene on the background is
+  timed as in "scenes only").
+- New guide: `references/no-speaker.md`; shooting tips for a voice-over in `references/shooting.md`.
+
+## 1.28.1
+
+- **Kit 1.17.1** (`kit.py update`): the kit's type check passes again (1.28.0 left an unused import in
+  `AtlasMascot.tsx`, which a strict `tsc` refuses). Nothing changes in your videos.
+
+## 1.28.0
+
+- **A mascot from your own character picture.** `mascot_atlas.py atlas <brand> <sheet|folder>` cuts a sheet of
+  poses (a grid, or a folder of `<pose>.png` with optional talk and blink frames) into an atlas, a rig and a
+  check sheet in the brand's folder, and prints the `brand.py mascot` command to save it.
+- **The background goes, the character stays.** A transparent picture is kept as drawn; a flat background is
+  removed from the edges in, so white eyes on a white background survive; background enclosed by the character
+  is numbered on the check sheet and removed only with `--holes`; a gradient or photo background is refused.
+- **The head does not jump between poses:** every pose is scaled and moved so the head lands on one anchor;
+  `check <brand> --fix` places them again after you correct the eyes in the rig.
+- **Kit 1.17.0** (`kit.py update`): the kit draws the atlas mascot, with a drawn talk frame or a mouth over
+  the picture and a blink; a one-sided picture is never shown mirrored.
+
+## 1.27.0
+
+- **Brand mascot (new, opt-in).** A character drawn in code in the brand's colors stands beside the scenes,
+  blinks, breathes and gestures on the words you choose, its mouth animated to your recorded narration
+  (`mascot.py mouth`, `mascot.py plan`, `references/mascot.md`).
+- **`brand.py mascot <slug> --drawn <component>`** saves the brand's character; `brand.py stage` registers it
+  in the Remotion project (`src/gen/mascots.ts`, added by `kit.py update`).
+- **The brand tone caps it:** off for premium, calm or full for the others; a pose change bounces only on a
+  loud scene in a brand that allows bounces.
+- **The checks keep the mascot clear** of the subtitle band, the app's buttons, scene boxes, callouts and
+  memes, with at most one gesture per 0.8 s and none at a scene's entrance; staging refuses a mouth measured
+  on an older cut, and the text check reports text over the mascot.
+- **Kit 1.16.0** (`kit.py update`): the kit draws the mascot.
+
+## 1.26.0
+
+- **Scenes over your recorded narration.** Record the voice on a phone (sound only), cut it with the same
+  `cut.json` as a video, and get an explainer of designed scenes with your voice and its subtitles
+  (`visual_plan.py init edit/<id> --scenes-voice`).
+- **A sound-only recording is cut like a video:** pauses, takes, speed, speech leveling and the edge check
+  work on m4a, wav, mp3, ogg and opus; a second run with nothing changed is cached; a file that is too short
+  or empty, and music under the voice, are named instead of failing later.
+- **New setting `reel.json → voice`** (`on_camera` by default, `off_camera` for a narration): with the voice
+  off camera the subtitles stay on over full scenes and the scene text keeps above them.
+- **Kit 1.15.0** (`kit.py update`): the kit plays the narration and keeps the subtitle band free over full
+  scenes.
+- **Mastering refuses a “scenes + voice” render that lost its voice** instead of mastering it as a silent promo.
+
+## 1.25.1
+
+- **Subtitles over a change of camera angle are checked against the right face.** A face measured exactly at the
+  change belonged to both angles, so the check could warn about a face that is not on screen yet.
+
+## 1.25.0
+
+- **The rough cut records its picture apart from its sound.** `captions.json` and `edl.json` get the picture
+  shots next to the sound pieces; for now they are an exact copy, so nothing changes in your videos.
+- Face checks, picture defects, the virtual camera's source seconds, the slow drift, tracked callouts and the
+  plan's “hide the join” hints follow the picture; speech checks, leveling and subtitles follow the sound.
+  A rough cut made with an earlier version keeps working as it is.
+- This is the groundwork for voice-over, mixed and no-speech videos in the next releases.
+
+## 1.24.0
+
+- **A P0 defect that survives two rounds of fixes now stops the preview** with a blocker report instead of
+  passing “with warnings” (1.23.0 let it through).
+- **Sound effects without a library.** Short pop, thud, click, ding, whoosh, rise and marker sounds are
+  synthesized in code with ffmpeg, from recipes in the skill: no files to download, no license to check.
+- **Sound effects sit better:** only events you can see get a sound, the sound lands one frame after the
+  picture, and a repeated sound alternates two or three takes instead of the same whoosh on every cut.
+- **Music starts from its fullest part.** With no single moment to land the track on, the agent finds the
+  stretch of the track as long as your video with the most energy and starts there, not on a quiet intro.
+- **Text behind the person is measured on the cut-out itself,** over every frame of the word's time, so a
+  head that moves no longer covers more of the word than the rule allows.
+- **Experimental: big text over video picks its blend from the brightness under it** (light on dark, dark
+  on light, a backing when the picture changes under the word). Subtitles and the marker bar are unchanged.
+- **A series keeps a log of your decisions,** so a choice made on one clip reaches the next ones even when
+  each clip is finished in a fresh conversation.
+
+## 1.23.0
+
+- **The agent reviews its own render before you see it.** Notes come as “time · where · problem → fix” with
+  priorities; every join is looked at up close and the whole video at phone size; after two rounds of fixes
+  anything left is reported as “passed with warnings” instead of fixed quietly again.
+- **Nothing is replaced quietly.** When a program, model or font is missing or a step fails, the agent says what
+  is missing and what it changes in the video before taking a simpler way.
+- **Fewer template-looking videos.** Spans longer than 3.5 s with no change in the picture are found from the
+  plan; promos of scenes only are checked for a slideshow feel (one scene type everywhere, three alike in a
+  row, no hero moment); a “swap test” catches a video that would fit any topic; a new brand's `rules.md` starts
+  with a short list of the generic look to avoid.
+- **More ideas for scenes and transitions:** phrase → picture ideas for `word` scenes and starting numbers for
+  transitions written for one video.
+
+## 1.22.3
+
+- **Housekeeping, nothing changes in use.** The visual plan's code is split into smaller files (`vp_core`,
+  `vp_camera`, `vp_scenes`, `vp_defects`, `vp_callouts`, `vp_validate`, `vp_stage`, `vp_shade`); `visual_plan.py`
+  keeps its commands, messages and file formats exactly as they were, so nothing needs updating and no plan is
+  staged again. The one file had grown close to the size the plugin directory reviews by hand.
+
+## 1.22.2
+
+- **A video staged by 1.21 says why it asks for its hook and card.** 1.22 keeps the chosen ending under a new
+  name and does not read the old one, so such a video asks once for `--hook` and `--card` again. The message said
+  their texts were "not stored"; it says now that an older version kept them and this one does not read them.
+  The same for a series preset saved from such a video.
+- **Kit 1.14.1** (`kit.py update`): the kit files 1.22.0 reworded for the directory's scan, under a version of
+  their own, so `doctor.py` and `kit.py check` agree. It draws exactly as before.
+- Docs: `references/scripts.md` names `balance.py`'s `[SOURCE:]` and says the master runs attach, not bake;
+  `references/migrations.md` tells Linux users with rembg's models in the `XDG_DATA_HOME` data folder to set
+  `matte.models`.
+
+## 1.22.1
+
+- **The figure cut-out finds its model where the check found it.** With no `matte.models` setting, `matte.py` checked
+  for the model in the default folder, while rembg could look in another one left set in your shell by some other
+  tool: the check passed, and rembg did not find the model. rembg now always looks in the folder the check used.
+- **A series video whose ending you switched off keeps it off.** A video from a series preset, staged by 1.21 with
+  its end card and corner logo taken off, got the preset's ending back on the next `stage` in 1.22, 2.6 s longer
+  and without a word. Now such a video stops once and asks: `--card`, `--sting` or `--no-end`, and `--corner` or
+  `--no-corner`. A video staged for the first time takes the preset's ending as before.
+- **Your own left UI zone counts for callouts too.** A callout's dot inside a left app zone set in the project's
+  `reel-defaults.json` is now reported, as the top, bottom and right sides were.
+- **The space above a face ends above the app's buttons.** With a tall bottom UI and a face low in the frame,
+  `faces.py` offered free space above the face that ran under the buttons.
+
+## 1.22.0
+
+- **The plugin reads no environment variables.** Every setting comes from `it-reelsmaker.json`, the project's
+  `reel-defaults.json` or an argument, so nothing in it reads values set on your machine outside the project. If you set
+  one of these, move it: `REELS_PROJECT` → `project_root`; `REELS_FACE_MODEL` → `face_model` or `--model`;
+  `REELS_MATTE_REMBG` → `matte.rembg` or `--rembg`; rembg's models outside `~/.u2net` → `matte.models`;
+  `REELS_ONLINE_SCRIPTS` → the add-on's `link` command; the `REELS_DEFAULTS_OVERLAY` layer is gone (use the project's
+  `reel-defaults.json`). Renders still get their own temp folder; nothing else changes in editing
+  (`references/migrations.md`).
+- **The master no longer encodes the video again for the cover.** `master_audio.py --cover` used to put the cover
+  into frame 0, which re-encoded the whole video; now the video is copied as it is, the cover is embedded as cover art
+  and saved next to the master as `…-cover.jpg` for uploading by hand. Frame 0 (what messengers show) stays the render's;
+  `poster.py bake` still puts the cover there when you ask for it.
+- **Your own UI zone counts everywhere.** A project that sets a taller app UI in its `reel-defaults.json`
+  (`meme_layout.safe`, for TikTok's bottom, say) used to get it only for memes: the text check, B-roll windows,
+  callouts, the free zones of `faces.py`, the presenter check of `matte.py` and the cover guide of `poster.py` kept
+  the default 220 / 420 / 120 px. Now all of them read the same setting, and the free zones `faces.py` offers end
+  above a bottom UI that starts above the subtitles. Without your own zone the one new thing is a `textcheck.py`
+  warning for text closer than 40 px to the left edge (the zone's left side, which it did not check before); the
+  kit's own subtitle position does not move with the setting.
+- A callout's label sizes (52 px name, 34 px detail) are in `references/typography.md` too, marked as a label next to
+  an object, not a card; `doctor.py` says that OpenCV is also what callouts that follow an object need.
+- Housekeeping, no change in what the checks report: the face margins (60 px rule, 30 px tolerance of the checks on
+  finished frames, 20 px for a callout's line) are one setting each in `reels_common.py`. The repository's front page
+  now names Remotion's license too (free up to 3 employees, a company license above that).
+- Catalog housekeeping, no change to editing: a few comments reworded so the directory's scan stops reading them
+  as the plugin handling sign-in data (it never did; the core makes no network requests).
+  The face model's download link moved from `faces.py`'s message to `references/faces.md`, "Model", where the
+  message now points.
+  Three kit files renamed a variable or rewrote a number format the scan misread (the font list in `Phrase.tsx`,
+  the entrance progress in `SceneLayer.tsx`, the item number in `List.tsx`); they draw exactly as before. (This
+  said there was no kit update to run; `kit.py check` did list the changed files: kit 1.14.1 since 1.22.2.)
+- **Catalog housekeeping.** The plugin has an icon for the directory; `doctor.py` names the Remotion
+  packages without a `*` in its check label; `plugin.json` drops four listing links that Claude Code never read
+  (the directory listing keeps the documentation, support, privacy and terms links it took at submission; they are
+  in the README too).
+- **`export` is now `stage`.** `visual_plan.py export` and `brand.py export` are `visual_plan.py stage` and
+  `brand.py stage`, with the same arguments: they put the video (or the brand) into the Remotion project. The plan
+  keeps the ending you chose under `finish`; a plan staged before this version still keeps its corner logo and a
+  sting, and asks once for the hook and the end card's lines (`--hook`, `--card`).
+- **Two renames.** `brand.py set` and `memes.py set` are now `brand.py change` and `memes.py change` (same
+  arguments: `change <slug> field=value`), and `brand.py tone … --set` is `--field`. The clip card's field that says what to do with the other voice in a
+  long recording (`cut` or `keep`) is now `other_voice`; a card written before is read as `cut`, and `longform.py
+  check` then warns about the other voice in that piece, so the card gets fixed on the next check. The presenter
+  examples are named `presenter`. The directory's scan misread the old words.
+
+## 1.21.0
+
+- **Callouts follow the object.** On a pan or a walk-through filmed by hand the object no longer slides away from the
+  dot: `track.py edit/<id> l01` follows it frame by frame and gives the callout a path; it stops at a joint of the
+  rough cut and where the object leaves the frame, and the dot fades out there. For a slow pan, points by hand:
+  `--keys 0:300,1150 2.4:540,1150`. `validate` measures the picture along the path, so a track or points that slip off
+  the object are refused, and asks for a new track when the rough cut changes. Needs OpenCV and numpy in your Python.
+- **Four more callout variants** (experimental, `--variant`): `line` (the name over the line, no plate; refused where
+  the picture under it is too light to read it), `badge` (a price or a rating in a circle), `ring` (a ring around one
+  object among others, growing with the camera and the track) and `dimension` (a measuring line between two points
+  with the size at its middle). A number on any of them still needs its source.
+- **A callout on a person.** `--person left|right|center` puts the dot on the shoulder under that face of
+  `faces.json` and follows it as the person moves; the label goes to the open side of the frame.
+- Kit 1.14.0 (`kit.py update`): `CalloutLayer` draws the variants and the moving anchors.
+
+## 1.20.0
+
+- **Callouts on objects (experimental).** A dot on an object in the frame, a leader line drawn from it and a label
+  wiping in: the object's name on the style's marker plate, a short detail in small caps under it, in the brand's
+  colors and fonts. `visual_plan.py add edit/<id> --kind callout --anchor X,Y --lines "SOFA" "LIVING ROOM" --at
+  word:sofa#1 --dur 2.6` (`references/callouts.md`). The dot follows the virtual camera and the drift exactly as the
+  video does, so `validate` checks the label where the render draws it: off every face, the subtitles, the app's UI and
+  the other graphics, readable in its time, one at a time, never across a camera cut. For a still shot: `add` warns
+  and `validate` refuses a callout on a handheld walk or a moving hand, by measuring the picture under the dot
+  (tracking a moving object is not built yet). The plan's “pointing at an object” hint and the techniques question now say when
+  to offer it (`references/callouts.md`, “Offering it”). Kit 1.13.0 (`kit.py update`).
+
+## 1.19.0
+
+- **A punchline stays on one subtitle.** The "Bar" subtitles hold at most 4 words per plate, so a 5-word joke ("it was
+  just admin admin") went over two plates and read in two beats. Mark such a phrase in `cut.json → keep` (its first
+  word, its second in the recording, how many words): it now stays on one block in every subtitle mode, on two lines
+  if needed. A phrase too long even for two lines is split as usual. `cut.py --dry-run` lists the marked phrases, and
+  the mark carries over to translated subtitles when it covers a whole phrase. Kit 1.12.0 (`kit.py update`).
+- **The render tries again once.** A render that stops with Remotion's "No frame found at position" (seen on an 8 GB
+  laptop; the same command worked when run again by hand) now reruns once by itself and says so. Both attempts stay
+  in `render.log` and in `render.json`; any other failure stops as before.
+
+## 1.18.0
+
+- **Subtitles under the picture in the framed format.** `reelcfg.py save edit/<id> --set subtitles_at=below
+  window=[25,641,1030,579]` puts the subtitles on the field under the window, so they never cover a slide or a screen;
+  scenes and the hook stay inside the window. A window too low to leave room for two lines is refused, and a
+  typewriter text that would not read on the field is named at export. Kit 1.11.0 (`kit.py update`).
+- **No lost frames on a 25 fps recording.** A conference talk at 25 fps cut at 30 fps came out 9 frames short (729 of
+  738): a piece that began between two source frames started a frame late and lost its last one. Every piece now has
+  exactly its planned frames, whatever the source's frame rate; a sped-up piece keeps time with its sound too.
+- **The white balance ignores a band the grade adds.** A `look.grade` that pads the picture with a color band was
+  measured as part of the video and gave a false correction; the balance is now measured on the video's own pixels.
+- **A clip with no graphics gets through `check.py`.** Its storyboard step said "nothing to put on the sheet" and failed;
+  it now succeeds with that note.
+- `poster.py pick` takes the last render of the video by itself (`--render` is optional), as the guide writes it.
+- The long-recording guide warns that word times from a cloud transcript drift around laughter and pauses, and says
+  how to fix them on each clip.
+
+## 1.17.1
+
+- **Learn motion from a reference, not copy it.** Give a video you like as a file: the agent looks at its frames, writes
+  its moves as a table by timecode (what moves, where, roughly how long, how it joins the next) and carries only those
+  mechanics into your scenes, with your material, texts and brand.
+- **Revisions as a defect table.** Notes on a finished video become rows (timecode, object, now, should be) before
+  anything changes; only what you asked for changes, and the whole video is checked again afterwards.
+- **Traceable brand choices.** Every color, font and logo rule of a new brand says where it came from: your material,
+  a rule it was inferred by, or a named default. Missing information is flagged and asked about, not invented.
+
+## 1.17.0
+
+- **The camera of a framed clip is proposed for you.** `longform.py camera edit/<id>` reads the faces and the words of a
+  clip in the framed format and proposes its `camera.json`: the people in the frame told apart left and right, each shot
+  on whoever speaks, a shot change on a pause between phrases or where two pieces meet, wide → medium → close → medium,
+  push-ins only as deep as the window's picture allows (×1.13 for a 1080p recording). Who sits where is asked once per
+  series. It shows the shots first, writes them with `--write`, and never touches a `camera.json` you wrote or edited.
+- **One moment of a long recording without reading all of it.** `speech_mask.py --from/--to` and `structure.py suggest
+  --from/--to` read only that stretch of the audio (a 90-minute file used to take minutes to read whole).
+- **The 9:16 crop of a horizontal video** (`window=[0,0,1080,1920]` in the framed format, no label) no longer shows the
+  field color in the screen's corners: a window over the whole screen gets square corners. Checked on a real 1080p
+  interview clip; the guide now says where this crop falls short (a soft picture, the head where the hook goes).
+
+## 1.16.0
+
+- **A long recording → a series of clips.** A podcast, webinar or interview of 10–90 minutes: `longform.py` takes the
+  whole recording's transcript (made once on your computer, or subtitles you already have), lays it out in parts to
+  read, and checks the clips the agent proposes: each piece found by its first and last words, a piece found twice, a
+  start or end mid-sentence, a clip that leans on what came before, two clips about the same thing, anything inside a
+  stretch you excluded. You approve the list once; each approved clip becomes an ordinary video folder with its pieces
+  as files and their transcripts, so no clip needs Whisper again. No virality score, no fixed number of clips
+  (`references/longform.md`).
+- **Renders clean up after themselves.** Remotion copied the Remotion project's whole `public/` into the temp folder on
+  every run and, on Windows, left those folders behind (tens of GB in a month). `kit.py render` and `kit.py still`, and
+  the storyboard sheet, the text check and the patch render, now give each run its own temp folder, remove it when the
+  run ends and copy only that video's files. `kit.py clean-temp` lists what older runs left; `doctor.py` counts it.
+- **A render that failed is never mastered.** `kit.py render` keeps the whole Remotion output in the video's
+  `render.log` and fails unless the render finished and its file is new.
+- `cut.py`: `fix_at` and `retime` entries can name their `source` (several pieces of one recording each start at 0 s).
+
+## 1.15.0
+
+- **Rare techniques leave the menus.** The message-thread, interface and icon scenes, the split, slide-panel and
+  window layouts, the cut-out figure (text behind the person, a presenter over a scene) and the phone mockup are
+  marked experimental: none is checked in a finished video yet. The skill offers one only where the footage clearly
+  asks for it, and the visual plan says “experimental” next to it; ask for any of them by name and it is done as before.
+  A slogan scene added without `--mode` is now full-screen (it was the split layout).
+- **Video profiles are opt-in.** No profile and no profile checklist unless you ask for one; a paid ad always gets
+  `ad`, since its rules are the platforms' own. The format still guides the length and the graphics in the plan.
+- **`use_code_scenes`** is the new name of `use_generated_footage`: it turns on code scenes drawn in Remotion. The old
+  name keeps working in your files, and `reelcfg.py` writes the new one.
+
+## 1.14.0
+
+- **Fewer stops before the first video.** A `workflow` setting: `quick` asks nothing up front when the brand is known
+  and stops at the cut plan and the preview; `standard` (the default) asks the structure, the ending, the logo, the
+  techniques and the sound together with the cut plan instead of three separate times; `full` keeps the profile, its
+  checklist and the reasons behind each decision.
+- **Series presets.** `reelcfg.py preset save <name> --from edit/<id>` keeps a finished video's answers and its ending;
+  `preset use <name> edit/<next>` starts the next video of the series from them.
+- **One build of the rough cut.** `cut.py` measures the white balance itself before it encodes (it used to be cut,
+  measure, cut again); a correction you set by hand or with `--ref` is kept.
+- **One command for the checks.** `check.py edit/<id>` runs the plan check, the storyboard and the text check before
+  the render; `check.py edit/<id> --render out/…` runs the faces audit and a contact sheet after it.
+- **The menu shows what the kit draws.** Custom styles and techniques (a per-video composition, more time) are marked
+  and offered when the content asks for them. Picture defects are checked on request, not on every video. The
+  environment check runs once per plugin version.
+
+## 1.13.0
+
+- **A plain edit by default, for real.** B-roll, memes and designed scenes are off until you choose them in the first
+  question: a brand tone or a video profile no longer turns them on behind your back. A video planned with an older
+  version, whose inserts came from the tone, gets a one-line fix from `visual_plan.py validate`.
+- **A re-export keeps what you approved.** The hook headline, the corner logo and the end card or logo sting are kept
+  in the plan, so a quick re-export for a late fix no longer drops them or changes the video's length. `--no-hook`,
+  `--no-corner` and `--no-end` take them off. A plan exported with an older version stops the export until the texts are given again (or taken off).
+- **Sound accents reach the master by themselves.** `master_audio.py` mixes in the video's `sfx.json` (next to the
+  cover, or with `--edit`); `--no-sfx` masters without them.
+- **No `init` for a plain edit.** With every insert off, `validate`, `md` and `export` create the plan themselves.
+- **One set of numbers.** A shot lasts 1.5–3.5 s, the subtitles use the kit's sizes, the end card and the sting are
+  2.6 s everywhere in the docs; the face check's 30 px tolerance on finished frames is named and explained (the 60 px
+  margin stays the rule when planning).
+- The README says what Remotion's own license asks of companies with more than 3 employees.
+
+## 1.12.0
+
+- **One speech level over the whole video.** The rough cut now evens out the voice: two takes recorded in different
+  places, a take closer to the phone, a speaker who leans back in the middle of a line no longer jump in loudness at a
+  cut or inside a piece. It is measured on the speech only, so the pauses and the room noise are not raised; `cut.py`
+  prints the level of each source before and after. A video that should keep a quiet moment turns it off with
+  `"level": false`.
+- The mastering step now says plainly that sound accents need `--sfx`: the kit plays none, so a master made without
+  it is silent where the scenes expected a sound.
+
+## 1.11.0
+
+- **A bad picture on a good take.** `defects.py` finds the stretches where the sound is fine and the picture is not:
+  the speaker turned away or looked down, the face left the frame or blurred, someone else walked in. The plan then
+  covers each one (a full or code scene, a replacing B-roll, a cutaway, entering by a cut) or keeps it with a reason;
+  the plan check says when an insert meant to cover a defect does not, and the storyboard sheet can show every one.
+
+## 1.10.0
+
+- **Takes found by the text.** `structure.py suggest` lists pairs of lines said twice, openings said again and
+  stutters, with times, clean cut ranges and a confidence; it does not pick the take to keep. The earlier take is no
+  longer offered as a teaser, and `cut.py` warns when two adjacent pieces of the rough cut say the same 3+ words.
+- **The storyboard sheet before the render.** `board.py` puts a settled frame of every scene, insert and card on one
+  numbered picture in seconds; you answer “3 and 7: redo” before the full render instead of after it.
+- **Text checked on the frame.** `textcheck.py` measures every piece of text the video draws, every 0.1 s: text cut
+  off by the frame, two texts on top of each other, text on a face; it sees a per-video composition too.
+- Kit 1.10.0 (`kit.py update`): the sampled render and the text probe these two use.
+
+## 1.9.1
+
+- **Catalog housekeeping, no change to editing.** The listing icon is no longer shipped inside the plugin (the catalog
+  holds every version with a picture in it for a manual review; the icon is set in the listing instead), and
+  `doctor.py` no longer looks into the model download cache, a folder of another tool: it shows the
+  one-time command that downloads the transcription model instead.
+
+## 1.9.0
+
+- **The master comes with its cover.** The cover used to be four optional steps after mastering and a second
+  “-final” file, and it was easy to forget. Now the cover is picked before mastering and
+  `master_audio.py … --cover edit/<id>/cover.jpg` builds one file: the cover as its first frame (what messengers
+  show), the cover embedded as the file's thumbnail, and the cover saved next to it as `…-cover.jpg` for uploading
+  it by hand. Mastering without a cover warns; `--check` says whether the cover is in.
+
+## 1.8.0
+
+- **Video profiles.** Say what the video is for, or let the skill tell it from the prompt: educational,
+  entertaining, expert clip, promo or paid ad. The profile sets the video's defaults (how many inserts, the
+  scene tone, memes), turns on its own rules and brings a checklist; the plan check measures what it can (length,
+  a slow start, one CTA, the brand in the first seconds, the ad safe zone) and the rest is confirmed before you see
+  the draft. Without a profile a video is edited as before.
+- **Content formats are now settings**: insight, list, case, story, skit, testimonial, intro, job opening, review,
+  event, interview clip, scenes only. Each brings its usual profile and length range, and a job opening may have two
+  calls to action.
+- **The brand tone stays the ceiling, and a brand can have its own tone for one kind of video.** An entertaining skit
+  at a calm brand used to need a manual override in every video; now the brand owner records it once
+  (`brand.py tone <brand> <tone> --profile entertaining`) and those videos follow it.
+- **Paid ads**: text, memes, the CTA and the subtitles are kept inside the ad safe zone (the subtitles are lifted
+  above the platform's caption and button, the corner logo moved down), the brand is checked by 3 s, memes need known
+  rights. The Remotion kit is 1.8.0 for this (`kit.py update` in an existing project).
+
+## 1.7.1
+
+- **A render no longer fails with “No frame found” when memory is short.** A new Remotion project gets a fixed video
+  cache (`remotion.config.ts`), and `kit.py check` names a project without one; Remotion used to size the cache from
+  the free memory and, with other apps open, shrink it to a few MB.
+
+Fixes found while editing two videos:
+
+- **Subtitles no longer drop because of a shoulder at the frame edge.** A weak face box cut by the left or right edge
+  of the frame is now recognized as a false face, and the subtitle height follows only confident faces. Older face
+  measurements are filtered again when read.
+- **A scene over the video no longer lands on the face.** When no regular slot is free, a hook or a list takes a low
+  band above the head; when even that is taken, the command stops and asks for a box instead of saving one on the face.
+- **New `transcribe.py splice`**: when a re-transcribed piece hears a spot right, its words replace the transcript's
+  words there, with a backup of the previous state.
+- **The rough cut names words only the cloud transcript heard** (their time is estimated): listen, and remove a word
+  that is not said.
+- Clearer messages instead of crashes or silence: `fix` in `cut.json` may be a list of pairs, and malformed `fix_at`
+  and `retime` entries are explained; `add --mode` is checked per insert kind; `export` without `--props` says that
+  the template props were not written; `faces.py audit` explains its argument order; the edge check advises merging
+  two ranges that meet inside a word.
+- `speech_mask.py --density tight` works: it is the same as `max`, the default.
+
+## 1.7.0
+
+- **Every decision comes with its reason.** The cut plan and the delivery report end with “Supports”: each decision
+  that shapes the video (structure, pace, shot sizes, text, inserts, color, sound) next to the rule behind it and how
+  far that rule is trusted, plus what was not applied or departed from and why. When you dislike something, you see
+  which rule produced it, and you change that rule instead of redoing the whole video.
+- **Three levels of trust for craft rules**: your own decisions (dated), rules checked on edited videos, and outside
+  advice. When rules disagree, the one meant for this kind of video wins, then the more trusted one; a real tie is
+  asked, and your answer becomes a rule.
+- **Your own playbook**: an optional `playbook.md` in your project holds your craft rules as cards (an ID that never
+  changes, where it applies and where not, why, source, trust). A guide or someone else's video you want to learn from
+  is saved into `refs/` and checked rule by rule against what the skill already knows: matches add a source, conflicts
+  are shown to you, new rules are added as outside advice. A correction you repeat, or say is “always”, becomes a rule.
+- `brand.py rule` records the reason and the scope of a brand rule (`--why`, `--scope`).
+
+## 1.6.1
+
+- **Instructions fixed**, so the skill does what it describes:
+  - inserts are no longer planned when you chose none: the brand tone turns B-roll (and for some tones memes) on
+    by default, so whatever you did not pick is now saved as off for the video;
+  - a video with every insert off still renders: the visual plan the export needs is created anyway;
+  - the plugin settings (project, Remotion and library folders, face model) now reach the scripts: the skill copies
+    them into the project's `it-reelsmaker.json`, the only file the scripts read;
+  - spot fixes and stills render the real video (the kit's `ReelKit` composition with the video's props) instead of
+    a per-video composition that usually does not exist, and the props path is given whole, so a render from a
+    Remotion folder inside the project no longer fails to find it;
+  - a promo without footage gets its exact start command (`visual_plan.py init … --scenes-only --duration 20`);
+  - the speech rate is checked when the words exist (after the transcript, and exactly after the rough cut), and
+    the structure check before the cut list reads the transcript file directly;
+  - the darkening under subtitles is described as what it is: “Typewriter” only; on a light background “Accent”
+    subtitles need the plate mode or a backing;
+  - sizes and layouts match what the kit draws: subtitle sizes per mode, past list items on light plates, the end
+    card's main line up to 64 px, the light flash (8 warm frames), a two-person layout that keeps the subtitles in
+    their band, light flashes counted against the brand tone's own limit;
+  - `visual_plan.py export --hook` and the full `shade` options are documented; the settings layers are listed in
+    the same order everywhere.
+- `doctor.py` and `kit.py` print commands with the script's real path, so they work when pasted in the project
+  folder (before, `python scripts/kit.py …` was not found there).
+- The skill's description names transcription, subtitle translation, `.srt` files and cutting out the person, and
+  says what it is not for (long horizontal edits, plain conversion or compression).
+
+## 1.6.0
+
+- **How the video starts and ends is now offered, not assumed.** Before the cut plan the skill reads the transcript
+  for strong lines and offers 2–3 structure variants with their length and risk: in order, without the slow start,
+  or a **teaser** (a strong line from later plays first, then the video from its start), and an ending on the payoff,
+  a call to action or a logo. A skit or a dialogue always gets a teaser option. Before, the skill knew “a skit opens
+  with its most controversial line” but never proposed it.
+- `structure.py suggest` marks the lines that can open the video, checks by the audio which of them can be cut out
+  cleanly and gives their exact cut edges; it also warns when a teaser would give the punchline away.
+- **An earlier edit of the same source is found**: `structure.py history` shows what was chosen then.
+- The menu of structure mechanics (`references/structure.md`): teaser, cutting the slow start, proof first, a beat
+  before the punchline, re-hook, ending on the payoff with a hold, callback, loop, and a 20–30 s video in beats.
+- **Videos no longer come out too warm after the brand look.** The color is balanced to neutral by measurement,
+  before the look, in every video: `balance.py` runs frames of the cut through the same look, finds the correction
+  that makes walls, white clothes and other grays neutral, shows the frames before and after and writes it into the
+  cut. Before, the correction was set by eye, and a brand LUT that pulls blue down turned the whole video yellow.
+- A list can now appear **over the video without shrinking the speakers** (`overlay` mode): its items show up one
+  by one on their words in the free space above the heads or at the chest, and the subtitles step aside meanwhile
+  (kit 1.6.0: `kit.py update`).
+- Fixes: a list or other scene that shrinks the speaker now sits on the style's own field (for example a light one)
+  instead of the dark primary color, where dark text vanished (kit 1.6.0: `kit.py update`); a hyphenated word split
+  by the transcriber (“no-no-no”) is one word again in the subtitles.
+- **A teaser is cut out whole.** Its edges are the line's first and last words, not a pause inside the line, so a
+  teaser no longer starts on the last word or stops before “and so?”; a line that runs into its neighbor without
+  a real pause (0.1 s) is marked as one to cut only together with it; a long question is one line, not two halves.
+  `structure.py suggest --from/--to` looks for teasers and the ending inside the part of a long recording you use.
+- **Cover candidates come from real pauses.** `poster.py pick --sheet` takes its frames from pauses of 0.15 s and
+  longer (a 60 ms dip between words put every frame mid-word) and marks the ones that fall on speech; `--t` on
+  speech warns.
+- **The brand style looks like the brand** (kit 1.6.0): a full-screen phrase sits on the brand's main color, not
+  the accent; the end card with a call to action shows the brand line under the logo and keeps every line out of
+  the buttons column on the right; a hook over the video shows its accent word on its own plate.
+- **Subtitles come back right after a scene** (kit 1.6.0), on the word being said, instead of half a second later.
+- **Editing the plan without opening its file**: `visual_plan.py remove` takes an insert out, `keep-clear --remove`
+  takes a graphics zone out, `visual_plan.md` lists those zones with their texts, and a hook without a variant is
+  refused when it is added, not later at the check.
+- `balance.py` warns when a gain sits at the edge of what it may do: the cast may need more than a balance fix,
+  look at the whites and the skin.
+- The face zones, the plan check and the render audit share one subtitle band; the audit checks the band the
+  render really has.
+- **The color fix no longer goes the wrong way on scenes full of colored light** (sky or sea through windows, neon):
+  `balance.py` refuses a correction that would make a cool picture cooler and says why. For such scenes it has an
+  eyedropper, `--ref`: point it at a white T-shirt, a wall or paper, and that object comes out neutral after the look.
+- **Presenter over a scene**: the layout cuts in and out and only the figure moves, instead of the whole picture
+  dissolving over the video; the cut-out's check frame shows the figure again; the scale message gives the real face
+  size on screen; a seated speaker cut by a table gets a warning with the line to cover; the presenter's span counts
+  in the inserts' budget, its own face is no longer reported as covered, and its cut-out file is copied into the
+  Remotion project by the export (kit 1.6.0: `kit.py update`).
+- **The light flash is the one the guide describes**: a short warm brightening centered on the cut, not a white frame
+  (kit 1.6.0: `kit.py update`).
+- **Two cameras**: the structure check asks which camera to analyze instead of silently taking the last transcript;
+  `transcribe.py rate` measures syllables per second on the cut, per camera and per segment; camera shots may name
+  their file as well as its name; the face zones never mix the two angles.
+- A cutaway from your own footage gets the same color as the cut around it.
+- A word only the local model heard can be removed from the subtitles (`"to": ""` in the cut list's fixes).
+- Fewer false alarms: a breath at a cut edge is no longer reported as a cut consonant (a final “s” still is);
+  subtitles hidden by your own composition are recorded in the plan (`visual_plan.py hide-subs`) and the face check
+  knows about them. `visual_plan.md` shows the hints for each line; the list hint no longer fires on ordinary commas;
+  chat bubbles are at least 40 px.
+- **A teaser no longer doubles a word.** When a line from later plays first, a word the transcript stretched over the
+  pause before another piece used to show up in both; now every word is shown once per run through the source, in
+  any order of the pieces (a line deliberately played twice still gets its subtitles twice). A dash the recognizer
+  returns as a word joins the word before it instead of lighting up on its own.
+- **Subtitles read better** (kit 1.6.0: `kit.py update`): chunks follow sentences, pauses and punctuation instead of
+  a 52-character cut, a short word or a number never ends a chunk or a line; the darkening behind “Typewriter” is at
+  full strength from the first frame after a scene (it used to fade in while the text was already there); the caret
+  is a thin bar in the accent color, no longer a “|” that read as the letter l; a translated phrase that a scene
+  covers for most of its time is hidden whole instead of showing its last words.
+- **The darkening is measured**: `visual_plan.py shade` finds the value that makes “Typewriter” text readable (4.5:1)
+  on the lightest frame and prints the setting; `subtitles_shade` is now a known setting.
+- **Subtitle files and translations**: a one- or two-word phrase joins its neighbor (no more 0.5 s subtitles and
+  one-word translations; existing translations are joined, not lost); `.srt` lines keep to 42 characters, a longer
+  phrase becomes several subtitles, and a number stays with its word. A quote scene written in the subtitle language
+  is checked against the translation.
+- **The plan check sees the camera**: graphics over the video are checked against the face through `camera.json`,
+  as the render shows it, so a box the render audit would flag is caught before the render.
+- “Editorial” takes its headings in the brand's serif (`fonts.serif`) in the kit; brand names with digits are no
+  longer taken for numbers; `visual_plan.py init` no longer says “inserts are off” when designed scenes are on.
+- **Subtitles in each speaker's color** (kit 1.6.0: `kit.py update`). In a two-person video you say who speaks in
+  the cut list (`"speaker"` per range, `"speakers"` for a switch inside one: on one microphone the speakers are told
+  apart by their lips), and every subtitle mode colors the words by speaker: the first in the usual colors, the
+  second in the accent, or your own colors (`colors.speakers` in the brand). Before, the guide asked for it and
+  nothing could do it: a skit needed two subtitle layers in its own composition.
+- **Music ducked under a main line**: `master_audio.py --duck 21.3-23.9` lowers the music (−14 dB by default) while
+  the line plays and brings it back, the voice untouched. The guides now tell this apart from the track's drop, its
+  loud moment placed on the final phrase.
+- **A quiet word is no longer cut out silently.** A short word spoken a few dB under the speech threshold looked
+  like a pause and vanished from the sound and the subtitles; the cut now names such a word (“check by ear”), and the
+  speech check flags a short pause with a sound just under the threshold.
+- **“Typewriter” never takes three lines** (kit 1.6.0): a phrase too long for two lines is split into two subtitles
+  where it reads as two, and two lines are balanced instead of leaving one word on the second; the band recorded for
+  the face check is what the kit can draw.
+- **A whip's blur no longer grows with the zoom** (kit 1.6.0): it is the same short 6 px at its peak at any shot
+  size (at ×1.3 it was 7.8 px). At the very end, the subtitles stay while the logo sting fades in over them
+  instead of vanishing as it starts.
+- Smaller fixes: the render audit flags a face cut at the side of the frame (in a skit, the other person after a
+  push-in); teaser candidates leave out interjections, lines with an estimated word and broken takes, and say that
+  the choice is by meaning; `balance.py` no longer says “already neutral” about grays no gain could fix; the list
+  hint finds a list set off by dashes; `keep-clear` checks the face through `camera.json`; `reelcfg.py show` lists
+  designed scenes; the cut length is printed rounded.
+- **A cutaway made from your own video keeps its color.** A clip cut out of the source for “detail first” (`extract`
+  in the cut list) is already in the cut's color; picking it as B-roll no longer applies the look a second time (a
+  white wall came out pink). Such a clip is now found as project footage under any name, and its `"what"` in the cut
+  list describes it.
+- **The B-roll search finds what the plain search finds.** The plan's search scores each insert by its search words,
+  like `footage.py search`, instead of diluting them with the long description; an insert with nothing found says
+  how to try again (`plan-search --retry`, or other words with `--insert b01 --query "…"`) instead of staying skipped.
+  Describing a file the index has not seen yet works, and indexing one folder no longer overwrites the project's
+  shared contact sheets.
+- **Structure hints fit a voice-over.** The slow-start hint looks for a strong line in the first third of the video
+  only, never at its end, and a price or another number in the opening line counts as a strong start. Lines whose
+  word times touch (as the local transcriber often writes them) get their clean edges from the audio's pauses: on a
+  real tour 7 of 9 lines can be cut out cleanly instead of 2. Another video's notes that only share a word with the
+  source (a brand of the same name) are no longer reported as an earlier edit.
+- **The last 2 seconds count from the real end.** With a logo sting or an end card after the cut, a scene shortly
+  before the cut's end is no longer refused: `visual_plan.py validate --sting` (or `--card`) before the export, and
+  the export records it. The CTA guide says what to do when two call lines don't fit the end of a voice-over.
+- **Darkening for any text zone**: `visual_plan.py shade --scene c01` (or `--zone x,y,w,h`) measures how much to
+  darken under text that sits outside the subtitles, for a style your own composition draws.
+- **Speech rate with prices**: numbers written in digits are left out of the syllable count and its time, so a
+  segment with a price no longer reads half as fast. A short re-transcription (`transcribe.py snip`) uses a prompt in
+  the video's language, so an English instruction no longer turns up in Russian text.
+- Smaller fixes: the face zones say “no face in this span” instead of “shorter than the scan step” for a long span
+  without a face; a meme added with its id carries its rights into the plan (no “rights unknown” before preparing
+  it); `patch_render.py --props` takes a relative path; the cover pick does not warn about a face when there is none
+  and widens its window when the first seconds have no pause (`--window` to set it); saving a style the brand does
+  not allow warns.
+- **A promo without footage flows from scene to scene** (kit 1.6.0): in the “scenes only” format one scene's text
+  leaves as the next one's enters, with no empty field between them (a 22 s promo had 89 empty frames, 14–15 at
+  every join; now one frame per join). The check warns when a join still leaves more than 4 empty frames, and its
+  summary gives how much of the video the scenes and their text cover.
+- **Its cover and its sound are finished by the plugin.** The cover pick works on a render without a sound track
+  (it used to crash) and takes the settled hook frame; the cover drawn without video sits on the style's field with
+  only the accent word on the marker, like the scenes (it came out on the dark color with both lines highlighted).
+  A master of scene sounds over silence meets the same acceptance check later (`master_audio.py --check`) that it
+  met when it was made: no −14 LUFS target without a voice or music, the peak still checked.
+- **Scenes read better on a light field** (kit 1.6.0): the focus brackets around a number and the tap on a call to
+  action button are drawn in a color that stands out from the field, the tap no longer covers a letter of the
+  button, and a counting number keeps its unit next to it (“6 days”, not “6   days”).
+- **The plan shows and checks what the viewer reads**: scene texts in `visual_plan.md` are in full (list items were
+  cut off), the caps label counts toward the reading time, any text the agent took itself (a hook, a list from the
+  client's site) is marked “to verify”, a mode a scene type cannot have is refused when it is added, the `word`
+  scene can fill the frame, and a `bell` sound marks a payoff or a number landing.
+- **A horizontal recording in a window, drawn by the template** (kit 1.6.0: `kit.py update`). Zoom calls, webinars
+  and podcasts: say `format=framed` in the video's settings (`reelcfg.py save edit/<id> --set format=framed
+  label="CANDIDATE INTERVIEW"`), and `ReelKit` draws a rounded window on the style's field with the caps label above
+  it, the speaker inside with the camera moving within the window, and the scenes and subtitles inside the window.
+  Before, the format existed only in the face measurement: the template laid the video as a band across the middle,
+  and every such video needed its own composition with a copy of the logo sting.
+- **The checks see the framed video as the viewer does**: a card next to the face is checked with the camera
+  where the window puts it (a shot moved toward the speaker was checked as if centered, and a face under a card
+  went unnoticed); the render check no longer reports a face “cut at the side” that sits inside the window.
+- **Zoom margin for a horizontal source, said right**: the window already enlarges the picture (×1.15 for 1080p,
+  ×1.72 for a typical 720p Zoom), so the push-in on top is small (≈ ×1.13 at 1080p, ≤ ×1.06 at 720p); the dynamics
+  come from moving the frame toward the speaker. A hook that does not fit the window's headroom can start on the
+  field above the window, or stay inside it at 76 px or more.
+- **No stray word at the start of a cut piece**: the tail of a removed line that only touched the piece (“…example.”)
+  no longer shows in the subtitles for the first frames; a word the transcript stretched over the following pause
+  stays. A line after a short pause (a quarter of a second) is no longer marked “no clean edge” by the structure
+  check, and its output explains its flags (`est`, `retake?`, `unfinished`). A word whose start the transcript
+  stretched back over the pause before a piece stays too, and a word the cut leaves out at an edge is named (“check
+  by ear”), so none disappears without a word.
+- **The framed cover matches the video** (kit 1.6.0): `ReelCover` draws the window, the label and the field, so frame 0
+  no longer jumps to a full-screen layout; the corner mark on a light field is the dark one, and the label stops
+  before it. `balance.py --still SECOND` writes the frame a `--ref` box is measured in (a frame grabbed from a 720p
+  source is smaller than the one the box refers to).
+- Smaller fixes: a teaser's cut end no longer lands 40 ms inside the last syllable on some lines; the beat after a
+  line is measured by the audio where the transcript glued the pause into a word; a lone dash no longer counts as a
+  word; `structure.py` keeps to the source cut.json names and skips a broken cut.json in another folder; a short
+  re-transcription takes the language code of any transcriber (“rus”, “en-US”); the render audit no longer reports a
+  face cut at the side under B-roll or a cutaway; picking project footage goes on without the look when the raw
+  source has moved; the burned-in subtitles and the `.srt` break lines by the same short words; translated subtitles
+  are rebuilt when only the speakers change; the darkening of a framed video is measured where its subtitles go;
+  a silent master mastered again with music loses its “no sound” tag, so the loudness is checked; a render with a
+  silent track becomes a master without one, which meets its own check; a failed export no longer records an end
+  card; the subtitles' height in a custom framed window allows for the drift around the window's center;
+  `balance.py` no longer suggests a one-step fix (0.01) for grays that are already neutral: it was measurement noise
+  and differed between ffmpeg builds.
+
+## 1.5.0
+
+- **Subtitles in another language.** `subs.py` splits the speech into phrases, Claude translates them in the
+  conversation (in the brand's voice, as short as the speech), the plugin checks the reading speed and puts the
+  translation on the same rhythm as the speech; one setting (`subtitles_lang`) burns it into the video. A re-cut
+  keeps the translations of the phrases that did not change.
+- **Subtitle files for the platforms**: `subs.py srt` makes a `.srt` of the original or the translation.
+- Languages written without spaces (Chinese, Japanese, Thai…) are shown word by word too: the translation marks the
+  word boundaries. Designed scenes keep landing on the spoken words when the subtitles are translated.
+- The kit is 1.5.0 (translated subtitles, words without spaces): `kit.py update` in your Remotion project.
+
+## 1.4.7
+
+- Step 2 points to the online add-on's more accurate transcript (a cloud text laid onto the local word times) for
+  people who have the add-on.
+- Scene sounds also on a video without a voice (a promo of scenes only): onto the music or silence; a sound whose
+  hit comes later in its file than its cue is trimmed to land on time.
+- The visual plan follows a re-cut of the same length too, and a scene placed on a word with an offset keeps it.
+- Camera shots on a cut from several cameras name their file (`"source"`); `transcribe.py audio` creates the
+  transcripts folder it points to.
+
+## 1.4.6
+
+- **Your own transcriber gets the right audio.** `transcribe.py audio edit/<id> <source>` makes only the audio file
+  on the video's timeline, with no local model. Give that file, not the video, to a transcriber of your choice: one
+  that pulls the sound out of a phone video itself places every word about 0.1 s early, and cuts set by those words
+  clip word endings.
+
+## 1.4.5
+
+- **Quiet consonants at phrase edges are kept**: the speech mask also listens to the high frequencies, so a final "s"
+  or an initial "ch" (quiet in overall loudness) stays in the cut; the edge check names an edge that cuts one.
+- **Word endings are no longer clipped on phone footage.** An iPhone video's sound track can start about 0.1 s after
+  the picture; the audio the plugin analyzed ignored that, so every cut landed 0.1 s early and ate the end of the
+  last word of each take. The analysis audio is now on the video's timeline, and a short consonant burst before a
+  phrase (the "p" in a word that starts with a stop) stays in the cut.
+- **Scene sounds get mixed in**: `master_audio.py --sfx edit/<id>/sfx.json` places each sound by its sound start,
+  under the voice, before mastering (the template never played them).
+- **The cover is not taken mid-word**: the frame comes from a pause in the speech, and `poster.py pick --sheet` shows the
+  candidates so the one with open eyes can be chosen.
+- **The file's thumbnail is your cover**: `poster.py attach` embeds the cover as cover art after mastering, so a file
+  manager no longer shows a random frame.
+- **The visual plan follows a rebuilt rough cut**: a new length and spans, and inserts placed by a word move with it.
+- **The virtual camera is in the template.** Shot sizes, punch-ins and whips no longer need code of your own: list the
+  shots in `edit/<id>/camera.json` (by a word, a second of the video or a source second), and the subtitles drop
+  under the chin for every shot (kit 1.4.5).
+- **“Typewriter” subtitles in the template**: the whole phrase, spoken words light up, a caret, a soft darkening
+  behind it that you can make stronger over light clothing. Before, this mode quietly turned into “Accent”.
+- **A cleaner ending**: a logo sting with the brand line (`export --sting`), a CTA card with a large main line and a
+  small muted clarifier, end-card lines that never run past the frame.
+- Fixes: a word stretched across a removed pause no longer shows twice in the subtitles, and short words with zero
+  length no longer vanish from them; a hand held out to the side is no longer taken for a face; a code scene's clip
+  length rounds up; `kit.py` ignores line endings and refuses to roll a newer project kit back to an older plugin.
+
+## 1.4.4
+
+- **Your own settings live in your project, not in the plugin.** `<project>/reel-defaults.json` holds your defaults
+  for every video (default brand, inserts, library folders, labels in your language): `reelcfg.py defaults --set …`.
+  Plugin updates never touch it; the brand profile and each video's settings still override it.
+- **Brand documents next to the profile.** Besides `rules.md`, a brand folder can hold its own video guide
+  (`guide.md`), its own CTA library with exact texts (`cta.md`) and any other brand documents linked from `rules.md`;
+  `brand.py show` lists them, and the skill reads them before graphics and at the brief.
+- Fixes: code scenes list all 8 required fields; the marker text color `ink` from the brand template now reaches the
+  Remotion kit (kit 1.4.4); styles ReelKit draws itself are named; CTA, meme size, library catalog and verification
+  notes filled in.
+
+## 1.4.3
+
+- **Transcription no longer breaks on some installs.** `transcribe.py` reads the audio itself and hands it to
+  faster-whisper, so a faster-whisper and PyAV version mismatch (for example faster-whisper 1.2.1 with PyAV 19) can't
+  stop it.
+- Step 8 names `brand.py export` before `visual_plan.py export`.
+
+## 1.4.2
+
+- A starter pack of 260 CC0 sound effects (Kenney, OpenGameArt) in the repository's releases, with how to add it to
+  your asset library: `references/library.md`.
+
+## 1.4.1
+
+- The online add-on's folder in `it-reelsmaker.json` (`online_scripts`) may start with `~` or be relative to the
+  project folder; before, only a full path worked (the add-on's `link` command always wrote one).
+
+## 1.4.0
+
+- **The Remotion kit ships with the plugin**: `ReelKit` (rough cut, word-timed subtitles, brand, B-roll, memes,
+  designed scenes, end card) and `ReelCover` (the cover still), driven by the props that `visual_plan.py export --props`
+  writes. No more composition code written from scratch for every video.
+- **`kit.py`**: `new <folder>` creates a starter Remotion project with the kit wired in (pinned package versions,
+  `Root.tsx`, an empty registry for code scenes); `check` and `update` keep the kit in an existing project current,
+  backing up any file they replace. Your `Root.tsx`, brands, plans and code scenes are never touched.
+- `doctor.py` reports whether the project has the kit and whether its version matches the plugin.
+
+## 1.3.0
+
+- **Ready-made scripts.** The plugin now ships the tools Claude used to write for each project: the rough cut, cut edges by the sound, face measurement, the visual plan with its checks, B-roll and memes from your own folders, code scenes, brand profiles, the cover and mastering. Edits go faster and work the same way every time.
+- **One cut list per video.** Segments, speed, color and transcript fixes go into one small file instead of new code. Two cameras with different speeds work too.
+- **Stops on a real problem.** A rough cut whose picture and sound don't line up, a quote that isn't word for word, a master that missed the loudness target: the script stops and says what to fix.
+- **Your files stay yours.** The scripts work only in your project folder and never go online.
+
+## 1.2.0
+
+- **Eight brand tones.** Besides premium, expert, friendly and bold there are now warm (medicine, psychology, family), story (travel, hotels, architecture), tech (software and IT) and drive (shops, launches, fitness). You see all eight with what each allows, and the skill recommends the ones that fit your field.
+- **Change the brand tone any time.** Say “change the brand tone”: you pick a new one, the profile is updated and keeps everything else.
+- **Older profiles update themselves.** A brand profile from 1.0 gets the expert tone, a backup copy and one line telling you what changed and how to change it.
+- **Clearer reports and fewer surprises.** A worked example of the cut plan and the final report, and a table of known problems with their fixes.
+
+## 1.1.0
+
+- **Designed scenes.** A big hook, a verbatim quote, the main thought as a punch, a number with a counter, a list item by item, before and after, a message thread, an interface with a cursor, the call to action as an action, and a cover. They are drawn in your brand's colors, land on the spoken word and keep the speaker's face in frame by default.
+- **Brand tone.** When you create a brand, pick premium, expert, friendly or bold. The tone sets which memes are allowed, how many cutaways a video gets and how loud the effects can be.
+- **A promo without footage.** A 15–25 second video made of scenes only, with your brand profile, end card and mastering.
+- **Text you can read.** On-screen text stays long enough to read, quotes are checked word for word against the transcript, and every number needs a source. Optional cover in frame 0 and a post caption.
+- **Your language.** The skill talks to you in your language, including its fixed labels and questions; text in the video follows the language of the video.
+- **What's new.** After an update, this note appears once on your first edit.
+
+## 1.0.0
+
+- First release in the Claude plugin directory: cut pauses and retakes by the sound, virtual camera and on-brand graphics in Remotion, word-timed subtitles, face-aware layout, optional B-roll, code scenes and memes, mastering to −14 LUFS and a 1080×1920 render.

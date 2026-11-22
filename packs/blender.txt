@@ -94,3 +94,5 @@ skill vfx-fx
 skill visual-console-eras
 skill voxel-style
 mcp blender -- uvx mcp-for-blender
+skill blender-claymation
+plugin @rolex blender-agent-skills@rolex EL4CTEO/blender-skills

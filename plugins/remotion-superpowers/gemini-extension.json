@@ -1,0 +1,79 @@
+{
+  "name": "remotion-superpowers",
+  "version": "2.3.0",
+  "description": "Full video production pipeline for Remotion — gives Claude eyes (video analysis), voice (TTS/voiceover), ears (music/SFX), stock footage, AI image/video generation, TikTok captions, 3D content, and more. By Dojo Coding Labs.",
+  "mcpServers": {
+    "ElevenLabs": {
+      "command": "uvx",
+      "args": [
+        "elevenlabs-mcp==0.12.2"
+      ],
+      "env": {
+        "ELEVENLABS_MCP_BASE_PATH": "./public",
+        "ELEVENLABS_MCP_OUTPUT_MODE": "files"
+      }
+    },
+    "remotion-media": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "remotion-media-mcp@1.2.2"
+      ]
+    },
+    "TwelveLabs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "-p",
+        "twelvelabs-mcp@1.0.0",
+        "twelvelabs-mcp-stdio"
+      ]
+    },
+    "Pexels": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@hanoak/pexels-mcp-server@1.0.2"
+      ]
+    },
+    "Replicate": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "replicate-mcp@0.9.0"
+      ]
+    }
+  },
+  "settings": [
+    {
+      "name": "ElevenLabs API key",
+      "description": "Voiceover, sound effects and music (https://elevenlabs.io)",
+      "envVar": "ELEVENLABS_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "KIE API key",
+      "description": "AI images and video clips; optional cheap audio drafts (https://kie.ai)",
+      "envVar": "KIE_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "TwelveLabs API key",
+      "description": "Video analysis and AI review (https://www.twelvelabs.io)",
+      "envVar": "TWELVELABS_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "Pexels API key",
+      "description": "Free stock footage (https://www.pexels.com/api/)",
+      "envVar": "PEXELS_API_KEY",
+      "sensitive": true
+    },
+    {
+      "name": "Replicate API token",
+      "description": "Optional: extra AI image/video models (https://replicate.com)",
+      "envVar": "REPLICATE_API_TOKEN",
+      "sensitive": true
+    }
+  ]
+}

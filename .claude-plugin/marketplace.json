@@ -1,0 +1,566 @@
+{
+  "name": "rolex",
+  "owner": {
+    "name": "titirshu-mannjal"
+  },
+  "metadata": {
+    "description": "Rolex: curated Claude Code toolkit for Instagram Reels (stored copies of every plugin)."
+  },
+  "plugins": [
+    {
+      "name": "remotion-superpowers",
+      "description": "Full video production studio for Remotion. AI voiceovers (ElevenLabs), music (Eleven Music), sound effects, stock footage (Pexels), AI image/video generation (KIE, Replicate), TikTok-style captions, 3D content, transitions, video analysis & review (TwelveLabs) \u2014 all wired into Remotion compositions. 13 slash commands, 3 agents, 5 MCP servers.",
+      "version": "2.3.0",
+      "author": {
+        "name": "Dojo Coding Labs",
+        "email": "team@dojocoding.io"
+      },
+      "source": "./plugins/remotion-superpowers",
+      "homepage": "https://github.com/DojoCodingLabs/remotion-superpowers",
+      "category": "media",
+      "keywords": [
+        "claude-code",
+        "claude-code-plugin",
+        "claude",
+        "anthropic",
+        "remotion",
+        "video-production",
+        "text-to-speech",
+        "music-generation",
+        "stock-footage",
+        "video-analysis",
+        "captions",
+        "tiktok",
+        "shorts",
+        "reels",
+        "ai-video",
+        "ai-image",
+        "3d",
+        "transitions",
+        "elevenlabs",
+        "suno",
+        "pexels",
+        "twelvelabs",
+        "replicate",
+        "mcp",
+        "vibecoding",
+        "dojo-coding"
+      ]
+    },
+    {
+      "name": "poppify",
+      "source": "./plugins/poppify",
+      "category": "creative",
+      "description": "Make reels worth sharing \u2014 the AI video generator and reels maker for Instagram, TikTok, YouTube Shorts and Facebook, driven from your AI assistant. Give it 1\u201310 photos or just a topic and get back a captioned 9:16 reel: Live Motion that animates the subject inside a still, AI-generated scenes you don't already have, cinematic camera moves, AI voiceover and music, all assembled into one edit and published to your channels. 12 MCP tools, one meaning each, covering plan, generate, edit, render, schedule and publish. $0.06 base render; 50 free seeds on signup, up to 150 once you connect a social account; no subscription.",
+      "tags": [
+        "reel",
+        "video",
+        "instagram",
+        "tiktok",
+        "youtube-shorts",
+        "facebook-reels",
+        "vertical-video",
+        "social-media",
+        "photo-to-video",
+        "creative",
+        "ai-image",
+        "ai-music",
+        "ai-voiceover",
+        "ai-video-generator",
+        "reels-maker",
+        "ai-reels-maker",
+        "live-motion"
+      ]
+    },
+    {
+      "name": "blender-agent-skills",
+      "source": "./plugins/blender-agent-skills",
+      "description": "28 tested Blender skills: model, UV, texture, bake, rig, animate, clothe, groom, build environments, toon, optimize, export, render, edit video, weather, QA"
+    },
+    {
+      "name": "remotion",
+      "displayName": "Remotion",
+      "source": "./plugins/remotion",
+      "description": "Create programmatic videos with Remotion and React",
+      "author": {
+        "name": "Remotion",
+        "email": "hi@remotion.dev"
+      },
+      "homepage": "https://www.remotion.dev/docs/ai/claude-code-plugin",
+      "repository": "https://github.com/remotion-dev/claude-code-plugin",
+      "license": "MIT",
+      "keywords": [
+        "remotion",
+        "video",
+        "react",
+        "animation"
+      ],
+      "category": "Design",
+      "tags": [
+        "video",
+        "motion-graphics",
+        "react",
+        "animation"
+      ]
+    },
+    {
+      "name": "hyperframes",
+      "source": "./plugins/hyperframes",
+      "description": "Recommended: all published HyperFrames skills in one versioned bundle. Create and render videos from HTML: the contract, film, captions, overlays, motion and look references, the CLI, the registry, media, Figma, slideshows and Remotion ports.",
+      "homepage": "https://hyperframes.heygen.com",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "social-media-skills",
+      "source": "./plugins/social-media-skills",
+      "description": "106 social media skills for AI agents \u2014 strategy, writing, video, design, platform growth, publishing, and analytics.",
+      "version": "1.0.1"
+    },
+    {
+      "name": "instagram-skills",
+      "source": "./plugins/instagram-skills",
+      "description": "Bundle of 9 Instagram marketing skills for Claude Code and Codex with Instagram-native hook formulas, caption writing that front-loads the first 125 chars, a 10-slide carousel planner, viral hook extraction, 2026 hashtag sizing, a unified humanizer (rewrite plus pre-publish audit), cross-platform repurposing, a profile optimizer, an Apify-powered niche and profile audience insights reader, and a weekly Reels and carousel planner. Posts ship via Publora's draft, upload, schedule media flow.",
+      "version": "1.0.34",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/instagram-skills",
+      "license": "MIT",
+      "keywords": [
+        "instagram",
+        "instagram-marketing",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "reels",
+        "carousel",
+        "captions",
+        "hashtags"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "it-reelsmaker",
+      "source": "./plugins/it-reelsmaker",
+      "category": "media"
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "source": "./plugins/ui-ux-pro-max",
+      "description": "Professional UI/UX design intelligence for AI coding assistants. Includes searchable databases of styles, colors, typography, charts, and UX guidelines for React, Next.js, Astro, Vue, Nuxt.js, Nuxt UI, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, Jetpack Compose, Angular, Laravel, JavaFX, and Three.js.",
+      "version": "2.15.0",
+      "author": {
+        "name": "nextlevelbuilder"
+      },
+      "keywords": [
+        "ui",
+        "ux",
+        "design",
+        "styles",
+        "typography",
+        "color-palette",
+        "accessibility",
+        "charts",
+        "components"
+      ],
+      "category": "design",
+      "strict": false
+    },
+    {
+      "name": "frontend-design",
+      "description": "Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics.",
+      "author": {
+        "name": "Anthropic",
+        "email": "support@anthropic.com"
+      },
+      "source": "./plugins/frontend-design",
+      "category": "development",
+      "homepage": "https://github.com/anthropics/claude-plugins-public/tree/main/plugins/frontend-design"
+    },
+    {
+      "name": "animation-skills",
+      "source": "./plugins/animation-skills",
+      "description": "Eleven skills that make animations for reels with no footage: low-poly 3D, a Minecraft-style voxel build, a 3D cartoon explainer, Kurzgesagt-style flat space, Dan Koe-style line art, a stick-figure explainer, minimal steps, a 3D map route, a 3D exploded view and a line graph."
+    },
+    {
+      "name": "kinetic-reel",
+      "description": "Kinetic-typography motion reels: bold condensed type, HUD micro-type, three.js generative layers, shape-continuity transitions and a synthesized beat-locked score.",
+      "source": "./plugins/kinetic-reel",
+      "strict": false,
+      "skills": [
+        "./skills/kinetic-reel"
+      ],
+      "category": "design",
+      "keywords": [
+        "motion-graphics",
+        "kinetic-typography",
+        "showreel",
+        "threejs",
+        "webgl"
+      ],
+      "homepage": "https://github.com/tuzhechen2005/opus-video-skills/tree/main/skills/kinetic-reel"
+    },
+    {
+      "name": "manim-skill",
+      "source": "./plugins/manim-skill",
+      "description": "Claude Code Skill for creating mathematical animations using Manim Community Edition. Plan, code, render, and iterate on 3Blue1Brown-style videos.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Yusuke Miyashita"
+      },
+      "homepage": "https://github.com/ymiy/manim-skill",
+      "repository": "https://github.com/ymiy/manim-skill",
+      "license": "MIT",
+      "keywords": [
+        "claude-skill",
+        "claude-code",
+        "manim",
+        "animation",
+        "math",
+        "video",
+        "3blue1brown",
+        "visualization",
+        "model-invoked"
+      ],
+      "category": "video",
+      "tags": [
+        "manim",
+        "animation",
+        "math",
+        "video",
+        "visualization"
+      ]
+    },
+    {
+      "name": "pixelfx",
+      "source": "./plugins/pixelfx",
+      "description": "A skill for pixel art effects and sprite animations: use, recolor and export the library's effects, or draft, render, look at and refine new ones until they look hand-animated.",
+      "category": "gamedev",
+      "tags": [
+        "pixel-art",
+        "vfx",
+        "animation",
+        "sprite-sheet",
+        "gamedev"
+      ]
+    },
+    {
+      "name": "explainer-studio",
+      "description": "One line to a narrated, captioned explainer video in eight hand-drawn styles. Deterministic, no GPU, no video model.",
+      "source": "./plugins/explainer-studio",
+      "strict": false,
+      "skills": [
+        "./skills/explainer-studio"
+      ]
+    },
+    {
+      "name": "rive-mcp",
+      "source": "./plugins/rive-mcp",
+      "description": "Create, edit, lint, render and preview Rive (.riv) animations without the Rive editor \u2014 35 MCP tools plus the design workflow that makes generated motion look professional"
+    },
+    {
+      "name": "visual-skills",
+      "source": "./plugins/visual-skills",
+      "description": "AI film director skills: video and image prompting"
+    },
+    {
+      "name": "screenwriting",
+      "source": "./plugins/screenwriting",
+      "description": "26 skills in four layers: general dramaturgy (workflow & story bible, structure, premise & theme, character & conflict, dialogue, scene craft, format & adaptation, Truby organic anatomy, genre anatomy); the medium layer (series: episode & season structure, series engine & bible, writers' room, half-hour comedy; stage: Chinese opera, banqiang and qupai methods with two full-script case libraries); tradition & trade (American case studies, Japanese, Korean & French, mainland-Chinese series practice, industry & business); and master corpora (Chekhov dramaturgy, Ozu screenplay style, Succession ensemble writing, television case studies); answers in the language you ask in (one Chinese source tree, no per-language forks)"
+    },
+    {
+      "name": "shotkit",
+      "source": "./plugins/shotkit",
+      "description": "Plan a video in Claude Code. One line of brief, or a folder of your own footage, becomes a board with every shot planned, prompted and checked.",
+      "version": "3.7.0-rc.3"
+    },
+    {
+      "name": "comfy",
+      "source": "./plugins/comfy",
+      "description": "Claude Code plugin for ComfyUI \u2014 generate images, visualize workflows, manage models, and explore custom nodes",
+      "version": "0.1.0"
+    },
+    {
+      "name": "linkedin-skills",
+      "source": "./plugins/linkedin-skills",
+      "description": "Bundle of 12 LinkedIn marketing skills for Claude Code and Codex with verified 2026 hook formulas, comment + reply templates that earn author replies, a unified humanizer (rewrite + `--mode audit` pre-publish check, plus bundled emoji-detector, detector-spread tester, rule-explainer sub-tools), profile rewriter, content planner, employee advocacy playbook, thread monitor (warm-reply window author-reply tracking), and engager analytics (likers + commenters ICP segmentation), interviewer (Story Bank of receipts, turning points and positions).",
+      "version": "1.1.29",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/linkedin-skills",
+      "license": "MIT",
+      "keywords": [
+        "linkedin",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "ai-agents",
+        "personal-branding",
+        "b2b",
+        "viral-content"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "tiktok-skills",
+      "source": "./plugins/tiktok-skills",
+      "description": "Bundle of 8 TikTok marketing skills for Claude Code and Codex with 3-second hook formulas, spoken-script hook writing, caption and platform-settings writing, trend and sound mapping, a unified humanizer (rewrite plus `--mode audit` pre-film check), and a weekly content planner. The user supplies the video; the rendered clip ships via Publora's draft, upload, schedule flow.",
+      "version": "1.0.35",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/tiktok-skills",
+      "license": "MIT",
+      "keywords": [
+        "tiktok",
+        "short-form-video",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "ai-agents",
+        "personal-branding",
+        "hooks",
+        "viral-content"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "youtube-skills",
+      "source": "./plugins/youtube-skills",
+      "description": "Bundle of 9 YouTube and YouTube Shorts marketing skills for Claude Code and Codex with click-through title formulas, SEO descriptions plus chapters, first-30-seconds and 3-second Shorts retention hooks, thumbnail design briefs, community-tab posts and polls, cross-platform content repurposing, a weekly long-form vs Shorts content planner, and a channel-page audit that converts viewers into subscribers. The video you supply uploads and schedules via Publora.",
+      "version": "1.0.35",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/youtube-skills",
+      "license": "MIT",
+      "keywords": [
+        "youtube",
+        "youtube-shorts",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "video-seo",
+        "creator-economy",
+        "thumbnails",
+        "viral-content"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "x-skills",
+      "source": "./plugins/x-skills",
+      "description": "Bundle of 9 X (Twitter) marketing skills for Claude Code and Codex with X-native hook formulas, single-tweet and auto-thread writing, a unified humanizer (rewrite plus `--mode audit` pre-publish check), viral hook extraction, reply and quote-tweet drafting, and a weekly content planner. Tweets and threads ship via Publora, which auto-splits long content into numbered threads.",
+      "version": "1.0.38",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/x-skills",
+      "license": "MIT",
+      "keywords": [
+        "x",
+        "twitter",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "ai-agents",
+        "personal-branding",
+        "threads",
+        "viral-content"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "threads-skills",
+      "source": "./plugins/threads-skills",
+      "description": "Bundle of 8 Threads (Meta) marketing skills for Claude Code and Codex with Threads-native hook formulas, single-post and multi-post thread writing, a unified humanizer (rewrite plus `--mode audit` pre-publish check), viral hook extraction, reply and quote drafting, and a weekly content planner. Posts and threads ship via Publora, which auto-splits long content into a connected multi-post thread.",
+      "version": "1.0.35",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/threads-skills",
+      "license": "MIT",
+      "keywords": [
+        "threads",
+        "meta-threads",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "ai-agents",
+        "personal-branding",
+        "instagram-threads",
+        "viral-content"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "facebook-skills",
+      "source": "./plugins/facebook-skills",
+      "description": "Bundle of 8 Facebook Pages marketing skills for Claude Code and Codex with Facebook-native high-share hook formulas, short punchy and long story Page-post writing, a unified humanizer (rewrite plus `--mode audit` pre-publish check), high-share post hook extraction, comment-reply drafting, a weekly Page content planner, Page optimization, cross-platform repurposing, and a real-data audience-insights read layer (Page stats plus commenters via Apify). Page posts ship via Publora.",
+      "version": "1.0.33",
+      "author": {
+        "name": "Serge Bulaev",
+        "url": "https://github.com/sergebulaev"
+      },
+      "homepage": "https://github.com/sergebulaev/facebook-skills",
+      "license": "MIT",
+      "keywords": [
+        "facebook",
+        "facebook-pages",
+        "marketing",
+        "social-media",
+        "content-creation",
+        "claude-skills",
+        "codex-skills",
+        "anthropic",
+        "ai-agents",
+        "page-management",
+        "engagement",
+        "viral-content"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "document-skills",
+      "description": "Collection of document processing suite including Excel, Word, PowerPoint, and PDF capabilities",
+      "source": "./plugins/document-skills",
+      "strict": false,
+      "skills": [
+        "./skills/xlsx",
+        "./skills/docx",
+        "./skills/pptx",
+        "./skills/pdf"
+      ]
+    },
+    {
+      "name": "example-skills",
+      "description": "Collection of example skills demonstrating various capabilities including skill creation, MCP building, visual design, algorithmic art, internal communications, web testing, artifact building, Slack GIFs, and theme styling",
+      "source": "./plugins/example-skills",
+      "strict": false,
+      "skills": [
+        "./skills/algorithmic-art",
+        "./skills/brand-guidelines",
+        "./skills/canvas-design",
+        "./skills/doc-coauthoring",
+        "./skills/frontend-design",
+        "./skills/internal-comms",
+        "./skills/mcp-builder",
+        "./skills/skill-creator",
+        "./skills/slack-gif-creator",
+        "./skills/theme-factory",
+        "./skills/web-artifacts-builder",
+        "./skills/webapp-testing"
+      ]
+    },
+    {
+      "name": "sales",
+      "displayName": "Sales",
+      "source": "./plugins/sales",
+      "description": "Prep calls, summarize and follow up, research accounts, review deals and pipeline, and write the forecast, using the CRM, email, calendar and chat tools your team already uses, or uploaded files. Updates records, drafts or sends email, posts to chat and books meetings when you ask."
+    },
+    {
+      "name": "finance",
+      "displayName": "Finance",
+      "source": "./plugins/finance",
+      "description": "Streamline finance and accounting workflows, from journal entries and reconciliation to financial statements and variance analysis. Speed up audit prep, month-end close, and keeping your books clean."
+    },
+    {
+      "name": "data",
+      "displayName": "Data",
+      "source": "./plugins/data",
+      "description": "Write SQL, explore datasets, and generate insights faster. Build visualizations and dashboards, and turn raw data into clear stories for stakeholders."
+    },
+    {
+      "name": "legal",
+      "displayName": "Legal",
+      "source": "./plugins/legal",
+      "description": "Speed up contract review, NDA triage, and compliance workflows for in-house legal teams. Draft legal briefs, organize precedent research, and manage institutional knowledge."
+    },
+    {
+      "name": "operations",
+      "displayName": "Operations",
+      "source": "./plugins/operations",
+      "description": "Optimize business operations \u2014 vendor management, process documentation, change management, capacity planning, and compliance tracking. Keep your organization running efficiently."
+    },
+    {
+      "name": "human-resources",
+      "displayName": "Human Resources",
+      "source": "./plugins/human-resources",
+      "description": "Streamline people operations \u2014 recruiting, onboarding, performance reviews, compensation analysis, and policy guidance. Maintain compliance and keep your team running smoothly."
+    },
+    {
+      "name": "product-management",
+      "displayName": "Product Management",
+      "source": "./plugins/product-management",
+      "description": "Write feature specs, plan roadmaps, and synthesize user research faster. Keep stakeholders updated and stay ahead of the competitive landscape."
+    },
+    {
+      "name": "small-business",
+      "displayName": "Small Business",
+      "source": "./plugins/small-business",
+      "description": "Pre-built small business workflows to help you run and grow your business. Supports a majority of the tools you already use. You approve every step that touches money or customers. Install and then ask Claude to help you get onboarded."
+    },
+    {
+      "name": "slack-by-salesforce",
+      "displayName": "Slack",
+      "source": "./plugins/slack-by-salesforce",
+      "description": "Slack integration for searching messages, sending communications, managing canvases, and more",
+      "author": {
+        "name": "Salesforce"
+      }
+    },
+    {
+      "name": "apollo",
+      "displayName": "Apollo.io",
+      "source": "./plugins/apollo",
+      "description": "Prospect, enrich leads, and load outreach sequences with Apollo.io \u2014 one-click MCP server integration for Claude Code and Cowork.",
+      "author": {
+        "name": "Apollo.io"
+      }
+    },
+    {
+      "name": "product-tracking-skills",
+      "displayName": "Product Tracking",
+      "description": "AI agent skills that make SaaS products data-ready for product analytics \u2014 from codebase scan to tracking plan to working instrumentation code.",
+      "source": "./plugins/product-tracking-skills",
+      "homepage": "https://www.accoil.com/product-tracking"
+    },
+    {
+      "name": "pdf-viewer",
+      "displayName": "PDF Viewer",
+      "source": "./plugins/pdf-viewer",
+      "description": "View, annotate, and sign PDFs in a live interactive viewer. Mark up contracts, fill forms with visual feedback, stamp approvals, and place signatures \u2014 then download the annotated copy."
+    },
+    {
+      "name": "ponytail",
+      "description": "Forces the laziest solution that works. YAGNI, stdlib first, one line over fifty.",
+      "source": "./plugins/ponytail",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "poppify",
+  "metadata": {
+    "description": "Poppify — the AI video generator and reels maker inside Claude. Photos or a topic in; a captioned 9:16 reel with Live Motion, music and voiceover out."
+  },
+  "owner": {
+    "name": "Poppify",
+    "email": "admin@poppify.ai"
+  },
+  "plugins": [
+    {
+      "name": "poppify",
+      "source": "./",
+      "category": "creative",
+      "description": "Make reels worth sharing — the AI video generator and reels maker for Instagram, TikTok, YouTube Shorts and Facebook, driven from your AI assistant. Give it 1–10 photos or just a topic and get back a captioned 9:16 reel: Live Motion that animates the subject inside a still, AI-generated scenes you don't already have, cinematic camera moves, AI voiceover and music, all assembled into one edit and published to your channels. 12 MCP tools, one meaning each, covering plan, generate, edit, render, schedule and publish. $0.06 base render; 50 free seeds on signup, up to 150 once you connect a social account; no subscription.",
+      "tags": [
+        "reel",
+        "video",
+        "instagram",
+        "tiktok",
+        "youtube-shorts",
+        "facebook-reels",
+        "vertical-video",
+        "social-media",
+        "photo-to-video",
+        "creative",
+        "ai-image",
+        "ai-music",
+        "ai-voiceover",
+        "ai-video-generator",
+        "reels-maker",
+        "ai-reels-maker",
+        "live-motion"
+      ]
+    }
+  ]
+}

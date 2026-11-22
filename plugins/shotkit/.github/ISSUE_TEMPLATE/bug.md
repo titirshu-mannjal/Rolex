@@ -1,0 +1,33 @@
+---
+name: Bug report
+about: Something the skill pack did wrong
+labels: bug
+---
+
+**Which skill?**
+- [ ] brand-lock-extractor
+- [ ] storyboard-architect
+- [ ] visual-prompt-forge
+- [ ] visual-asset-critic
+- [ ] storyboard-html-preview
+- [ ] shotkit (the one command)
+- [ ] the board
+- [ ] sk generate (fal.ai)
+- [ ] install.sh / docs / other
+
+**Environment**
+- Claude product (Claude.ai / Claude Code / API):
+- Claude model (for example Opus 5.5 or Sonnet 5):
+- OS (if Claude Code):
+
+**What you ran**
+The prompt or command. Paste verbatim.
+
+**What happened**
+What output did you get? Paste the relevant section of `storyboard.md`, `shots.json`, or whatever the skill produced.
+
+**What you expected**
+What should have happened?
+
+**Brand-lock file (if relevant)**
+Paste or link the brand-lock file you were using. Or note "default / none."

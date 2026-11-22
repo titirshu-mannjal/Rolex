@@ -1,0 +1,3 @@
+# Free AI video generation. ComfyUI (WAN, LTX image-to-video, lip-sync, interpolation) runs locally and needs an NVIDIA GPU with 12 GB+ VRAM. video-toolkit runs open models (LTX-2, FLUX.2, Qwen3-TTS, ACE-Step music) on Modal's free monthly credit.
+plugin @rolex comfy@rolex artokun/comfyui-mcp
+bundle claude-code-video-toolkit claude-code-video-toolkit uv sync -q

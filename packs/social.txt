@@ -1,7 +1,7 @@
 # Other platforms: LinkedIn, TikTok, YouTube, X, Threads, Facebook.
-plugin sergebulaev/linkedin-skills linkedin-skills@linkedin-skills
-plugin sergebulaev/tiktok-skills tiktok-skills@tiktok-skills
-plugin sergebulaev/youtube-skills youtube-skills@youtube-skills
-plugin sergebulaev/x-skills x-skills@x-skills
-plugin sergebulaev/threads-skills threads-skills@threads-skills
-plugin sergebulaev/facebook-skills facebook-skills@facebook-skills
+plugin @rolex linkedin-skills@rolex sergebulaev/linkedin-skills
+plugin @rolex tiktok-skills@rolex sergebulaev/tiktok-skills
+plugin @rolex youtube-skills@rolex sergebulaev/youtube-skills
+plugin @rolex x-skills@rolex sergebulaev/x-skills
+plugin @rolex threads-skills@rolex sergebulaev/threads-skills
+plugin @rolex facebook-skills@rolex sergebulaev/facebook-skills

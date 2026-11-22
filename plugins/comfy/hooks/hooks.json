@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/hooks.schema.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__plugin_comfy_comfyui__enqueue_workflow",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/vram-check.mjs\""
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__plugin_comfy_comfyui__restart_comfyui",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/save-warning.mjs\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__plugin_comfy_comfyui__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/job-complete-notify.mjs\""
+          }
+        ]
+      }
+    ]
+  }
+}
