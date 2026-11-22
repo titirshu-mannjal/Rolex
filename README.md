@@ -47,7 +47,7 @@ Restart Claude Code afterwards.
 |---|---|
 | `--packs a,b` | Install these packs (default: `core`) |
 | `--all` | Install every pack |
-| `--tools` | Also install `yt-dlp`, `auto-editor`, `whisper-ctranslate2` (Whisper captions), `edge-tts` and `depthflow` (photo parallax) through `uv` |
+| `--tools` | Also install `yt-dlp`, `auto-editor`, `whisper-ctranslate2` (Whisper captions), `edge-tts`, `depthflow` (photo parallax) and `rembg` (cut-outs) through `uv`; the Real-ESRGAN upscaler; and the editorial fonts in `assets/fonts` |
 | `--dry-run` | Show what would happen, change nothing |
 | `--list` | List the packs |
 
@@ -152,6 +152,8 @@ Only `core` installs by default. The rest are opt-in so overlapping skills don't
 | `poppify` (plugin) | Photos to a finished reel (Poppify account) |
 | `social-media-skills` → kling / runway / veo-3 / luma | Prompting the big image-to-video models |
 | [DepthFlow](https://github.com/BrokenSource/DepthFlow) (`--tools`) | Free, local 3D parallax from one photo; no AI look, no watermark |
+| [rembg](https://github.com/danielgatis/rembg) (`--tools`) | Free, local background removal for collage cut-outs and product isolation |
+| [Real-ESRGAN ncnn](https://github.com/xinntao/Real-ESRGAN) (`--tools`) | Free 4x upscaler on any GPU through Vulkan; rescues archive scans and half-res renders |
 | `ai` pack → VibeFrame | Seedance, Kling, Runway, Veo, Grok image-to-video with a hard spend cap |
 
 ### 5. Captions, voice and sound

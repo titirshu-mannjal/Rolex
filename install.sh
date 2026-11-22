@@ -109,12 +109,27 @@ rm -rf "$WORK"
 if [ $TOOLS -eq 1 ]; then
   echo "== Command-line tools"
   if command -v uv >/dev/null; then
-    for t in yt-dlp auto-editor whisper-ctranslate2 edge-tts depthflow; do
+    for t in yt-dlp auto-editor whisper-ctranslate2 edge-tts depthflow "rembg[cpu,cli]"; do
       run uv tool install -q "$t" </dev/null >/dev/null 2>&1 && echo "  + $t" || echo "  ! $t failed (install it by hand)"
     done
   else
     echo "  ! uv not found. Install it (https://docs.astral.sh/uv/) and re-run with --tools."
   fi
+  # Real-ESRGAN upscaler (GPU via Vulkan, no Python). Last prebuilt release upstream is v0.2.5.0.
+  case "$(uname -s)" in
+    Linux) RE=ubuntu ;; Darwin) RE=macos ;; *) RE=windows ;;
+  esac
+  RED="${XDG_DATA_HOME:-$HOME/.local/share}/realesrgan"
+  if [ -x "$RED/realesrgan-ncnn-vulkan" ] || [ -f "$RED/realesrgan-ncnn-vulkan.exe" ]; then echo "  = realesrgan-ncnn-vulkan"
+  elif run curl -fsSL -o "/tmp/realesrgan-$$.zip" "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-$RE.zip" \
+    && run mkdir -p "$RED" && run python3 -c "import zipfile,sys;zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "/tmp/realesrgan-$$.zip" "$RED"; then
+    run chmod +x "$RED/realesrgan-ncnn-vulkan" 2>/dev/null || true
+    run mkdir -p "$HOME/.local/bin"; run ln -sf "$RED/realesrgan-ncnn-vulkan" "$HOME/.local/bin/realesrgan-ncnn-vulkan"
+    rm -f "/tmp/realesrgan-$$.zip"; echo "  + realesrgan-ncnn-vulkan (models in $RED/models)"
+  else echo "  ! realesrgan-ncnn-vulkan failed (install it by hand)"; fi
+  # Editorial fonts (SIL OFL, bundled in assets/fonts).
+  case "$(uname -s)" in Darwin) FD="$HOME/Library/Fonts" ;; *) FD="$HOME/.local/share/fonts/rolex" ;; esac
+  run mkdir -p "$FD" && run cp "$SRC"/assets/fonts/*.ttf "$FD"/ && { command -v fc-cache >/dev/null && run fc-cache -f >/dev/null 2>&1; echo "  + fonts -> $FD"; }
 fi
 
 echo "== Checking system tools"

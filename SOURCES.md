@@ -71,3 +71,11 @@ Some folders carry their own `LICENSE` file; where they do, that file wins.
 |---|---|
 | MCP servers | `@playwright/mcp`, `mcp-for-blender`, `@vibeframe/mcp-server` |
 | Tools (`--tools`) | yt-dlp, auto-editor, whisper-ctranslate2, edge-tts, DepthFlow (AGPL-3.0, covers the software, not your videos) |
+
+## Fonts in `assets/fonts/`
+
+Anton, Archivo Black, Bebas Neue, Instrument Serif, Inter, Oswald and Space Mono from [google/fonts](https://github.com/google/fonts), all under the SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
+
+## Map data (fetched, not bundled)
+
+`satellite-map-story` downloads NASA Blue Marble Next Generation through NASA GIBS (public domain), optionally EOX Sentinel-2 cloudless 2016 (CC BY 4.0, credit required), and [Natural Earth](https://www.naturalearthdata.com) borders (public domain).

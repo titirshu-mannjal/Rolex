@@ -157,3 +157,6 @@ agent reel-editor-qa.md
 plugin @rolex visual-skills@rolex smixs/visual-skills
 plugin @rolex screenwriting@rolex jtydhr88/screenwriting-skills
 plugin @rolex shotkit@rolex whystrohm/shotkit
+skill archival-collage-story
+skill product-check-reel
+skill satellite-map-story

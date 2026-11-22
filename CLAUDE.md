@@ -35,6 +35,9 @@ Before building, look at `references/` if it exists: two finished videos Claude 
 | Cinematic 3D | `threejs-*`, Blender pack | `title-sequence-3d`, `particle-system`, `blender-claymation` |
 | Explainers | `manim-skill:manim-skill`, `explainer-studio:*` | `motion-canvas`, `animation-skills:kurzgesagt`, `papercut-*` |
 | One photo → motion | `perspective-illusion`, `pixel2motion`, DepthFlow CLI | `object-separation`, `colorize`, `fisheye-motion` |
+| Maps: satellite push, region lift, photo pins, arcs | `satellite-map-story` | `remotion-maps` (Mapbox token), `threejs-earth-render`, `animation-skills:map-route` |
+| 3D product checklist ad: orbit, macro detail, x-ray, checklist cards | `product-check-reel` | Blender pack (`blender-clothing`, `cloth-sim`, `blender-lighting-lookdev`), Blender MCP |
+| Heritage / history collage: archive stacks, cut-outs, giant numbers, film plates | `archival-collage-story` | `rembg`, `realesrgan-ncnn-vulkan`, `colorize`, `effects` |
 | Sound | `sound-effects`, `beat-sync-editing` | `library/` (local SFX and music), edge-tts / whisper-ctranslate2 CLIs |
 | Edit, captions, export | `video-use`, `ffmpeg-skill`, `reel-export` | `caption-animation`, `reels-editor`, `loop-cover` |
 | Instagram packaging | `instagram-skills:*` | `social-media-skills:*` |
@@ -53,7 +56,7 @@ Free tools only by default. Paid APIs (the `ai` pack) need the user's explicit O
    `git clone --depth 1 https://github.com/titirshu-mannjal/Rolex.git ~/.local/share/rolex/repo && cd ~/.local/share/rolex/repo`
    If it exists, update it: `git -C ~/.local/share/rolex/repo pull --ff-only`. The repo is about 1.5 GB; run the clone in the background and wait.
 2. Show the packs (`bash install.sh --list`) and say that `core` is the default studio stack.
-3. Run `bash install.sh` for core, or `bash install.sh --packs core,blender,...` / `bash install.sh --all` if the user asked for more. Add `--tools` for yt-dlp, auto-editor, whisper-ctranslate2, edge-tts and DepthFlow.
+3. Run `bash install.sh` for core, or `bash install.sh --packs core,blender,...` / `bash install.sh --all` if the user asked for more. Add `--tools` for yt-dlp, auto-editor, whisper-ctranslate2, edge-tts, DepthFlow, rembg, Real-ESRGAN and the editorial fonts.
 4. Report the summary line, any failures, and any MISSING system tools with the install command for the user's OS.
 5. Tell the user to restart Claude Code.
 
