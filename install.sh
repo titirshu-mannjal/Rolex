@@ -22,13 +22,18 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-# Piped from curl: fetch the repo first, then run the real copy.
+# The plugin marketplace is read from a local copy of this repo, so that copy must stay put.
+# Piped from curl: keep a shallow clone at ~/.local/share/rolex/repo (updated on every run).
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/rolex"
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
 if [ ! -d "$SRC/packs" ]; then
   command -v git >/dev/null || { echo "git is required" >&2; exit 1; }
-  TMP_REPO="$(mktemp -d)"; trap 'rm -rf "$TMP_REPO"' EXIT
-  git clone --depth 1 -q "$REPO_URL" "$TMP_REPO"
-  SRC="$TMP_REPO"
+  SRC="$DATA_DIR/repo"
+  if [ -d "$SRC/.git" ]; then
+    echo "Updating $SRC"; git -C "$SRC" fetch -q --depth 1 origin main && git -C "$SRC" reset -q --hard origin/main
+  else
+    echo "Downloading Rolex (about 1.5 GB) to $SRC"; mkdir -p "$DATA_DIR"; git clone --depth 1 -q "$REPO_URL" "$SRC"
+  fi
 fi
 
 [ "$PACKS" = "all" ] && PACKS="$(ls "$SRC/packs" | sed 's/\.txt$//' | paste -sd, -)"
@@ -52,7 +57,7 @@ place() {
 HAVE_CLAUDE=0; command -v claude >/dev/null && HAVE_CLAUDE=1
 [ $HAVE_CLAUDE -eq 0 ] && echo "! 'claude' CLI not found: skills will be copied, plugins and MCP servers skipped. Install Claude Code, then re-run."
 HAVE_PLUGINS=" "; [ $HAVE_CLAUDE -eq 1 ] && HAVE_PLUGINS=" $(claude plugin list </dev/null 2>/dev/null | sed -n 's/^ *❯ *\([^ ]*@[^ ]*\).*/\1/p' | tr '\n' ' ')"
-WORK="$(mktemp -d)"; DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/rolex"; ADDED_MKT=" "   # bash 3.2 (macOS) has no associative arrays
+WORK="$(mktemp -d)"; ADDED_MKT=" "   # bash 3.2 (macOS) has no associative arrays
 
 run mkdir -p "$CLAUDE_DIR/skills" "$CLAUDE_DIR/agents"
 IFS=',' read -ra PACK_LIST <<< "$PACKS"
@@ -84,9 +89,9 @@ for pack in "${PACK_LIST[@]}"; do
         mkt="${b#*@}"
         # Same plugin already installed from its original marketplace: keep it, so skills don't load twice.
         case "$HAVE_PLUGINS" in *" ${b%@*}@"*) case "$HAVE_PLUGINS" in *" $b "*) ;; *) echo "  = plugin ${b%@*} (already installed)"; continue ;; esac ;; esac
-        [ "$a" = "@rolex" ] && a="${ROLEX_MARKETPLACE:-titirshu-mannjal/Rolex}"   # this repo is the marketplace
+        [ "$a" = "@rolex" ] && a="${ROLEX_MARKETPLACE:-$SRC}"   # this repo (local copy) is the marketplace; avoids a second 1.5 GB download
         case "$ADDED_MKT" in *" $mkt "*) ;; *)
-          run claude plugin marketplace add "$a" </dev/null >/dev/null 2>&1 || true   # already added is fine
+          run claude plugin marketplace add "$a" </dev/null >/dev/null 2>&1 || run claude plugin marketplace update "$mkt" </dev/null >/dev/null 2>&1 || true   # already added: refresh it
           ADDED_MKT="$ADDED_MKT$mkt " ;;
         esac
         if run claude plugin install "$b" </dev/null >/dev/null 2>&1; then echo "  + plugin $b"; ok=$((ok+1)); else failed+=("plugin $b"); fi ;;

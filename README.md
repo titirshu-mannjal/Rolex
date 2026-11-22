@@ -31,7 +31,8 @@ curl -fsSL https://raw.githubusercontent.com/titirshu-mannjal/Rolex/main/install
 **Or clone first, then choose packs:**
 
 ```bash
-git clone --depth 1 https://github.com/titirshu-mannjal/Rolex.git && cd Rolex
+git clone --depth 1 https://github.com/titirshu-mannjal/Rolex.git ~/.local/share/rolex/repo
+cd ~/.local/share/rolex/repo
 bash install.sh --list                     # see the packs
 bash install.sh                            # core video stack (default)
 bash install.sh --packs core,blender       # add packs
@@ -39,6 +40,8 @@ bash install.sh --all --tools              # everything + CLI tools
 ```
 
 Restart Claude Code afterwards.
+
+> **Keep the repo folder.** The download is about 1.5 GB. Plugins are installed from that local copy (`~/.local/share/rolex/repo` by default), so don't delete it. To update, run the installer again.
 
 | Flag | What it does |
 |---|---|
@@ -197,7 +200,7 @@ Some plugins call paid services (Poppify, ElevenLabs, Kling, Runway). They ask f
 
 ## Update and uninstall
 
-- **Update:** run the installer again. Old copies go to `~/.claude/rolex-backup/`.
+- **Update:** run the installer again: it pulls the latest repo and refreshes plugins. Old skill copies go to `~/.claude/rolex-backup/`.
 - **Remove a skill:** delete its folder in `~/.claude/skills/`.
 - **Remove a plugin:** `claude plugin uninstall <name>@<marketplace>`.
 
