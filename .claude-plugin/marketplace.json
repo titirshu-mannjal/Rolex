@@ -561,6 +561,11 @@
       "description": "Forces the laziest solution that works. YAGNI, stdlib first, one line over fifty.",
       "source": "./plugins/ponytail",
       "category": "productivity"
+    },
+    {
+      "name": "edit-kit",
+      "source": "./plugins/edit-kit",
+      "description": "Edit Kit (Sahil Sharma, MIT + credited Apache/MIT skills): prompt-to-video editing on HyperFrames - /edit, 11 styles, reels and YouTube edits of raw footage, SaaS promos, fx engine, frame-synced sound, QA, special looks."
     }
   ]
 }

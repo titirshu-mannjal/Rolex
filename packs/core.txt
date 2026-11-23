@@ -105,6 +105,7 @@ agent impeccable-finish-reviewer.md
 agent impeccable-manual-edit-applier.md
 plugin @rolex remotion@rolex remotion-dev/claude-code-plugin
 plugin @rolex hyperframes@rolex heygen-com/hyperframes
+plugin @rolex edit-kit@rolex local-zip/Edit-Kit
 plugin @rolex social-media-skills@rolex social-media-skills/skills
 plugin @rolex instagram-skills@rolex sergebulaev/instagram-skills
 plugin @rolex it-reelsmaker@rolex itpartypattaya/reels-montage

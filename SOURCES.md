@@ -96,3 +96,11 @@ Anton, Archivo Black, Bebas Neue, Instrument Serif, Inter, Oswald and Space Mono
 
 Not in this repo (personal licensed kits, kept in local `library/`): Damiano Caudullo's Motion Graphics starter kit and the 3D Animator skill.
 
+
+## Edit Kit (plugin `edit-kit`)
+
+Core by Sahil Sharma (MIT). Extra skills by HeyGen/HyperFrames (Apache-2.0), ReelMimic contributors, iart.ai, Digital Samba, Anthropic, tuzhechen2005, Vincentwei1021 and Alisa Qian (MIT/Apache-2.0); full table in `plugins/edit-kit/CREDITS.md`, licence texts in `plugins/edit-kit/licenses/`.
+
+## VoiceStudio (not bundled)
+
+[debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio), AGPL-3.0 desktop app installed from its signed GitHub release; never copied into this repo.
