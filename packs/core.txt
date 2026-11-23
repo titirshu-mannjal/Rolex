@@ -1,5 +1,5 @@
 # Core Instagram video stack: motion graphics, captions, sound, editing, photo-to-motion, scripting.
-# Line types: skill <folder> | agent <file> | setup <skill> <command> | bundle <folder in tools/> <name> <install command> | plugin <owner/repo> <plugin@marketplace> | mcp <name> -- <command...>
+# Line types: skill <folder> | agent <file> | setup <skill> <command> | bundle <folder in tools/> <name> <install command> | plugin <owner/repo> <plugin@marketplace> | mcp <name> -- <command...> | fetch <skill> <owner/repo> <path>
 skill ad-creative-video
 skill anatomy
 skill animate
@@ -162,3 +162,8 @@ skill product-check-reel
 skill satellite-map-story
 skill depth-captions
 skill voiceover-direction
+skill earshot
+skill real-sound
+skill real-sfx
+skill openverse-sounds
+fetch hyperframes-to-after-effects clipwing/skills skills/hyperframes-to-after-effects

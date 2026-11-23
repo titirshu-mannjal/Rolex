@@ -41,7 +41,12 @@ Before building, look at `references/` if it exists: two finished videos Claude 
 | Voiceover that sounds alive (Indian English, premium, relatable) | `voiceover-direction`: one continuous Kokoro read (`hm_omega` male default, `hf_alpha` female) with stress marks, `vo_polish.py`, measured against references | `edge-tts` en-IN; Chatterbox expressive cloning (GPU, consenting voice only) |
 | Captions with depth (word behind the head) | `depth-captions` (rembg `birefnet-portrait`, Whisper snapped to onsets) | `caption-animation`, `remotion-captions` |
 | Learn a technique from a YouTube video or podcast | `/learn` (installed user-wide) | |
-| Sound | `sound-effects`, `beat-sync-editing` | `library/` (local SFX and music), edge-tts / whisper-ctranslate2 CLIs |
+| Sound design from real recordings | `real-sfx` (your SOUNDE pack + CC0 + UI cues, frame-exact placement, critique) | `real-sound` (full launch-film soundtrack with licence audit), `sound-effects`, `beat-sync-editing`, `library/` |
+| Hearing what you cannot hear (judge, rank, A/B, sync, realness) | `earshot` CLI (`earshot realness/rank/compare/timeline/critique`) | `voiceover-direction` prosody meter |
+| A specific real sound the libraries lack | `openverse-sounds` (commercial-safe licences only, credits written) | Freesound CC0, Mixkit |
+| 3D film in code, no Blender | `3d-animator` (three.js, sub-frame motion blur and DOF, local-only skill) | `threejs-*`, Blender pack |
+| Proven motion-graphics prompts and styles | `motion-graphics-starter` (local-only kit) | `hyperframes`, `kinetic-reel:*` |
+| Hand a HyperFrames film to After Effects | `hyperframes-to-after-effects` | |
 | Edit, captions, export | `video-use`, `ffmpeg-skill`, `reel-export` | `caption-animation`, `reels-editor`, `loop-cover` |
 | Instagram packaging | `instagram-skills:*` | `social-media-skills:*` |
 
@@ -50,7 +55,7 @@ Free tools only by default. Paid APIs (the `ai` pack) need the user's explicit O
 ## Local-only folders (never commit or push)
 
 - `references/` - Claude-built reference videos and their source (confidential).
-- `library/` - sound effects, music, style references.
+- `library/` - sound effects, music, style references, and the user's licensed kits (`3d-animator`, `motion-graphics-starter-kit`) that must not go public.
 - `productions/` - all new work.
 
 ## Installing (when asked to "install this repo")

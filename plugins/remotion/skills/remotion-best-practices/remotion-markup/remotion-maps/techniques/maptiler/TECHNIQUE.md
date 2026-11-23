@@ -17,7 +17,7 @@ Use `preserveDrawingBuffer:true`.
 
 Render labels as positioned [`<Interactive.Div>`](https://www.remotion.dev/docs/interactive.md) elements.
 
-Replace `YOUR_API_KEY` in [`assets/MapTilerVectorElement.ts` source](assets/MapTilerVectorElement.ts.md) with a MapTiler key.
+Replace `YOUR_API_KEY` in `assets/MapTilerVectorElement.ts` with a MapTiler key.
 Initialize the map once using a ref guard and update it imperatively per frame.
 
 When constructing MapLibre/MapTiler layer objects, omit optional properties that are absent.  
@@ -40,7 +40,7 @@ evidence.
 
 Animate each layer according to its source and meaning.
 
-MapTiler vector features remain split across tiles. Do not use them for a semantic start-to-end line draw; extract, verify, order, and bake that element to GeoJSON first. Read **`references/map-data-sources.md`** and reuse **[`assets/MapTilerVectorElement.ts` source](assets/MapTilerVectorElement.ts.md)** for provider-layer setup and per-frame paint updates.
+MapTiler vector features remain split across tiles. Do not use them for a semantic start-to-end line draw; extract, verify, order, and bake that element to GeoJSON first. Read **`references/map-data-sources.md`** and reuse **`assets/MapTilerVectorElement.ts`** for provider-layer setup and per-frame paint updates.
 
 ## Motion stability
 
@@ -60,6 +60,6 @@ Strip clutter on `load`: remove `symbol` layers (place labels) and `/other borde
 
 Use as reference:
 
-- [`assets/MapTilerVectorElement.ts` source](assets/MapTilerVectorElement.ts.md) — filtered MapTiler Planet elements.
+- `assets/MapTilerVectorElement.ts` — filtered MapTiler Planet elements.
 - `references/map-data-sources.md` — provider vector versus custom GeoJSON selection.
 - `references/render-stability.md` — camera motion and stable headless renders.

@@ -32,7 +32,7 @@ layer names or fields.
 Common layer categories include `waterway`, `water`, `transportation`, `boundary`, `landcover`, and
 `poi`; availability, fields, and zoom ranges vary by schema version.
 
-Replace `YOUR_API_KEY` in [`../assets/MapTilerVectorElement.ts` source](../assets/MapTilerVectorElement.ts.md) with a MapTiler key.
+Replace `YOUR_API_KEY` in `../assets/MapTilerVectorElement.ts` with a MapTiler key.
 
 ```ts
 import {addMapTilerVectorElement, setVectorElementPaint} from "./MapTilerVectorElement";

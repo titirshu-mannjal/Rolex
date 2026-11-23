@@ -83,3 +83,16 @@ Anton, Archivo Black, Bebas Neue, Instrument Serif, Inter, Oswald and Space Mono
 ## Methods credited
 
 `depth-captions` follows the method in Shaan Johari's (@viashaan) public guide "How I edited my captions reel with AI" (Notion, 2026), rewritten in our own words.
+
+## Added 2026-11-23
+
+| Source | What | Licence | How it ships |
+|---|---|---|---|
+| [Leonxlnx/earshot](https://github.com/Leonxlnx/earshot) | `earshot`, `real-sound` skills; `earshot` CLI via `--tools` | MIT | bundled |
+| [clipwing/skills](https://github.com/clipwing/skills) | `real-sfx` (scripts MIT, uisfx sounds CC0) | MIT / CC0 | bundled |
+| [clipwing/skills](https://github.com/clipwing/skills) | `hyperframes-to-after-effects` | no licence stated | `fetch` line: cloned from GitHub at install time |
+| [WordPress/openverse](https://github.com/WordPress/openverse) | Openverse API used by our `openverse-sounds` skill | API terms; each file keeps its own CC licence | our own skill |
+| [cloudai-x/threejs-skills](https://github.com/cloudai-x/threejs-skills), [greensock/gsap-skills](https://github.com/greensock/gsap-skills), [remotion-dev/skills](https://github.com/remotion-dev/skills) | updated to upstream | MIT / official plugin | bundled |
+
+Not in this repo (personal licensed kits, kept in local `library/`): Damiano Caudullo's Motion Graphics starter kit and the 3D Animator skill.
+

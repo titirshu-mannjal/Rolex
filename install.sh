@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Rolex installer: copies skills/agents into ~/.claude and installs Claude Code plugins + MCP servers.
+# Pack line types: skill | agent | setup | bundle | plugin | mcp | fetch <skill> <owner/repo> <path-in-repo>
 # Usage: bash install.sh [--packs core,blender,...] [--all] [--tools] [--dry-run] [--list]
 set -euo pipefail
 
@@ -72,6 +73,11 @@ for pack in "${PACK_LIST[@]}"; do
         place "$SRC/skills/$a" "$CLAUDE_DIR/skills/$a" && ok=$((ok+1)) || failed+=("skill $a") ;;
       agent)
         place "$SRC/agents/$a" "$CLAUDE_DIR/agents/$a" && ok=$((ok+1)) || failed+=("agent $a") ;;
+      fetch)
+        # A skill installed straight from its GitHub repo at install time (not redistributed here): fetch <skill> <owner/repo> <path>
+        if [ $DRY -eq 1 ]; then echo "  [dry-run] fetch $a from $b/$rest"; ok=$((ok+1))
+        elif git clone -q --depth 1 "https://github.com/$b" "$WORK/fetch-$a" </dev/null >/dev/null 2>&1 && place "$WORK/fetch-$a/$rest" "$CLAUDE_DIR/skills/$a"; then ok=$((ok+1))
+        else failed+=("fetch $a"); fi ;;
       setup)
         # Run a one-time setup (e.g. npm install) inside an installed skill folder.
         if [ $DRY -eq 1 ]; then echo "  [dry-run] (cd skills/$a && $b $rest)"; ok=$((ok+1))
@@ -109,7 +115,7 @@ rm -rf "$WORK"
 if [ $TOOLS -eq 1 ]; then
   echo "== Command-line tools"
   if command -v uv >/dev/null; then
-    for t in yt-dlp auto-editor whisper-ctranslate2 edge-tts depthflow "rembg[cpu,cli]"; do
+    for t in yt-dlp auto-editor whisper-ctranslate2 edge-tts depthflow "rembg[cpu,cli]" "earshot[listen,mcp] @ git+https://github.com/Leonxlnx/earshot"; do
       run uv tool install -q "$t" </dev/null >/dev/null 2>&1 && echo "  + $t" || echo "  ! $t failed (install it by hand)"
     done
   else
