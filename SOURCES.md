@@ -79,3 +79,7 @@ Anton, Archivo Black, Bebas Neue, Instrument Serif, Inter, Oswald and Space Mono
 ## Map data (fetched, not bundled)
 
 `satellite-map-story` downloads NASA Blue Marble Next Generation through NASA GIBS (public domain), optionally EOX Sentinel-2 cloudless 2016 (CC BY 4.0, credit required), and [Natural Earth](https://www.naturalearthdata.com) borders (public domain).
+
+## Methods credited
+
+`depth-captions` follows the method in Shaan Johari's (@viashaan) public guide "How I edited my captions reel with AI" (Notion, 2026), rewritten in our own words.

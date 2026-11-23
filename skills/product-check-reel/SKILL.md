@@ -36,6 +36,26 @@ Framing marks: thin corner crop brackets in all four corners for the whole video
 - Render: Cycles or EEVEE at 1080x1920, 30 fps, then `realesrgan-ncnn-vulkan` only if rendering at half res to save time.
 - Use `camera-cinematography`, `blender-director` and `animation-principles` for the moves.
 
+## 3b. Hard-won Blender rules (from the first watch build)
+
+- **Camera clip start:** Blender's default near clip is 100 mm. Any macro closer than 10 cm renders empty. Set `cam.data.clip_start = 0.002`.
+- **Aim in the product's own coordinates.** When the product is tilted, convert local points with `root.matrix_world @ Vector(local)`; world-space guesses miss.
+- **Frame by field width, not distance:** portrait 9:16 with a 36 mm sensor (AUTO fit) has a 20.25 mm horizontal sensor, so `distance = field_width_mm * lens_mm / 20.25`. Pick the field (e.g. 26 mm for a crown, 50 mm for a 40 mm dial) and compute the camera.
+- **Macro depth of field:** at ~0.8x magnification f/4 gives under 1 mm of focus, so everything goes soft. Use f/16-f/22 for macro shots, f/5.6-f/8 for hero shots (CG has no diffraction penalty).
+- **Boolean-cut objects keep an empty first material slot** and render grey. Clear slots before assigning (`obj.data.materials.clear()`).
+- **Glass in EEVEE:** a solid domed crystal refracts the background into a white blob. Use a thin, near-flat cap with Transparent + Glossy mixed by Fresnel x 0.45, render method Blended.
+- **Metal needs something to reflect:** add emissive "softbox" planes invisible to camera (`visible_camera = False`) beside and above the product.
+- **Render engine:** EEVEE at 48 samples is ~1-5 s a 1080x1920 frame on a 4 GB laptop GPU; Cycles is 5-10x slower. Make renders resumable (`use_overwrite = False`, `use_placeholder = True`) and launch them detached (`setsid nohup`).
+- Preview every shot at 25% resolution with a frame step before the full render, and look at the sheet.
+
+## 3c. Exploded view (the ad money shot)
+
+1. Group parts under empties parented to the product (crystal, bezel, hands, dial, case, caseback, straps), keeping world transforms.
+2. Lay the product flat and film from just above the horizon so the explode axis reads as screen-vertical; spin the product slowly (30-40 deg over the shot).
+3. Timing over ~4.6 s: hold 0.5 s, lift parts 2 frames apart (bottom-up order so the top part travels furthest), hold exploded ~1.3 s, reassemble with a 4% overshoot past home, settle.
+4. Export each part's screen position per frame (`world_to_camera_view`) to JSON; in the overlay, labels with leader lines read that track so they follow the parts while the product turns.
+5. Sound: whoosh as parts lift, a small click per part, ticks on labels, a reverse riser into the reassembly and an impact + metal click on the snap. Land the next VO line on the snap.
+
 ## 4. Overlays (HyperFrames or Remotion over the rendered plates)
 
 - Type system: label `Space Mono` 9-11 px tracking 0.1em; feature title `Archivo Black` 40-48 px; captions `Instrument Serif Italic` 34-40 px white with 20% shadow; numbers condensed (`Bebas Neue`).

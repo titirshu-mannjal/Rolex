@@ -160,3 +160,5 @@ plugin @rolex shotkit@rolex whystrohm/shotkit
 skill archival-collage-story
 skill product-check-reel
 skill satellite-map-story
+skill depth-captions
+skill voiceover-direction
