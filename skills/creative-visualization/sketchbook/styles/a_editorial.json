@@ -1,0 +1,33 @@
+{
+ "scheme": "light",
+ "statement": "Your team, finally working in one flow.",
+ "ink": "#1d1d1f",
+ "ink_faint": "#8C8A90",
+ "stage": "#F3F1ED",
+ "stage_2": "#E9E6EF",
+ "tagline": "One flow. Every partner.",
+ "url": "meridian.app",
+ "mark_colours": [
+  "#B7AEF2",
+  "#B7AEF2",
+  "#8C7FE6",
+  "#8C7FE6",
+  "#5B4BC9"
+ ],
+ "field": {
+  "frequency": 1.6,
+  "speed": 2,
+  "cellSize": 22,
+  "gamma": 6,
+  "paletteBias": 2,
+  "palette1": "#F3F1ED",
+  "palette2": "#DAD4F0",
+  "palette3": "#C9D6E9",
+  "palette4": "#F3F1ED",
+  "background": "#F3F1ED"
+ },
+ "field_opacity": 0.9,
+ "url_ink": "#4a4752",
+ "pill_border": "#d6d2de",
+ "glow": "rgba(140,127,230,0.22)"
+}

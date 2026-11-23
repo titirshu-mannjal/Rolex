@@ -77,6 +77,12 @@ Motion rules that apply to every family: frame 0 already moving; eased (never li
 - **Restraint:** what can be removed so the idea reads faster?
 - **Phone test:** does it read at phone size, muted, in the first second?
 
-## 5. Grow the range
+## 5. Proven blocks and the restyle pattern
+
+- **Search the registry before building anything:** 448 HyperFrames blocks, indexed by atlas family in `references/registry-index.md` (regenerate with `scripts/index_registry.py`). Install with `npx hyperframes add <name> --json`, then restyle through its variables (`data-variable-values`) or its CONFIG.
+- **Restyle, do not copy:** `sketchbook/make_sketch.py <style.json> <out>` builds the same three blocks (halftone dot field, word-fill statement, mark assembly) into two different films from two style files: `a_editorial` (off-white, lavender dots, cool mark, tech line) and `b_warm_india` (near-black, saffron dots, gold lotus, trust line). Proven 2026-11-24: both pass `hyperframes check` with 0 errors and render at 11 s.
+- **Lessons from that test:** registry blocks can ship other brands' marks (`logo-outro` contains the Figma logo): always replace with the client's own mark; unfilled words in a word-fill need ≥ 3:1 contrast; a strong dot field behind type hurts reading (keep it ~0.3 opacity on dark); widen lines so no single word is stranded.
+
+## 6. Grow the range
 
 Every new reference the user shares goes through `reel-production/scripts/teardown.sh`, a row in `references/teardowns.md`, and any new technique into the atlas above or `references/craft-nuances.md` with its job and when it hurts. Every finished film adds one line to `productions/<slug>/NOTES.md`: what worked, what did not, what to try next.

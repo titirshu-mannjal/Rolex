@@ -1,0 +1,34 @@
+{
+ "scheme": "dark",
+ "statement": "Trust, built one promise at a time.",
+ "ink": "#F6EBDD",
+ "ink_faint": "rgba(246,235,221,0.38)",
+ "stage": "#0B0906",
+ "stage_2": "#1A120A",
+ "tagline": "Rooted in trust. Built for Bharat.",
+ "url": "meridian.in",
+ "mark_colours": [
+  "#C9821F",
+  "#C9821F",
+  "#E8A23A",
+  "#E8A23A",
+  "#F4C46A"
+ ],
+ "field": {
+  "frequency": 2.4,
+  "speed": 3,
+  "cellSize": 34,
+  "gamma": 14,
+  "paletteBias": 3,
+  "palette1": "#0B0906",
+  "palette2": "#5A2E0C",
+  "palette3": "#C9821F",
+  "palette4": "#0B0906",
+  "background": "#0B0906"
+ },
+ "field_opacity": 0.32,
+ "fontSize": 76,
+ "url_ink": "#E8C98F",
+ "pill_border": "#3a2714",
+ "glow": "rgba(232,162,58,0.28)"
+}
