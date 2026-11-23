@@ -174,3 +174,4 @@ skill brief-amplifier
 fetch voicestudio debpalash/VoiceStudio skills/voicestudio
 skill ui-promo-film
 skill brand-reveal-film
+skill creative-visualization

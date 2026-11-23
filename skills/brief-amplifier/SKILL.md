@@ -18,6 +18,8 @@ Structure learned from a spec-ad prompt whose output was exceptional (an Amazon 
 
 ## Step 2: find the idea (the step that makes it phenomenal)
 
+Run `creative-visualization` (the eight lenses, the domain guide, the idea score) and pick the motion families from its atlas. The notes below are the short version.
+
 Write 3 candidate ideas, each one sentence, then pick one and say why. A strong idea:
 - comes from the brand's or product's own symbol or truth (the Amazon smile is an arrow from a to z; a watch's tick is a heartbeat; a spice brand's red is the colour of its chilli),
 - has ONE through-line device that carries every beat (a line of light, a thread, a colour, a sound, an object) and hands it from scene to scene, so the film feels like one shot,

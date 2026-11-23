@@ -23,7 +23,7 @@ Before building, look at `references/` if it exists: two finished videos Claude 
 
 | Goal | First choice | Also |
 |---|---|---|
-| Concept, big idea | `creative-director` | `papercut-strategy` |
+| Concept, big idea, how to visualise a subject | `creative-visualization` (lenses, animation atlas, domain guide) | `creative-director`, `papercut-strategy` |
 | Script, hook, series arcs | `reel-writer` agent, `screenwriting:*` | `social-short-production`, `instagram-skills:*`, `papercut-hook`, `manjuforge` (series memory) |
 | Direction, shot list, blocking | `cinematic-director` | `visual-skills:video`, `cinematic-shot-direction`, `editing-montage` |
 | Storyboard / animatic | `reel-storyboard-artist` agent, `shotkit:*` | `storyboard-previsualization`, `papercut-storyboard` |
