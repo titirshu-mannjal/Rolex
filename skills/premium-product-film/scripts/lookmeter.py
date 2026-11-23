@@ -61,5 +61,8 @@ if __name__ == "__main__":
     ap.add_argument("--ref-frames"); ap.add_argument("--ours-frames")
     a = ap.parse_args(); tmp = tempfile.mkdtemp(); times = [float(t) for t in a.times.split(",")]
     rp = sorted(glob.glob(a.ref_frames)) if a.ref_frames else frames_from(a.ref, times, tempfile.mkdtemp(dir=tmp))
+    if not (a.ours or a.ours_frames):  # stats only: describe one film's look
+        for k, v in measure(rp).items(): print(f"{k:10} {v:8.3f}")
+        sys.exit(0)
     op = sorted(glob.glob(a.ours_frames)) if a.ours_frames else frames_from(a.ours, times, tempfile.mkdtemp(dir=tmp))
     sys.exit(1 if compare(measure(rp), measure(op)) else 0)

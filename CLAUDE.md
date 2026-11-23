@@ -36,6 +36,9 @@ Before building, look at `references/` if it exists: two finished videos Claude 
 | Explainers | `manim-skill:manim-skill`, `explainer-studio:*` | `motion-canvas`, `animation-skills:kurzgesagt`, `papercut-*` |
 | One photo → motion | `perspective-illusion`, `pixel2motion`, DepthFlow CLI | `object-separation`, `colorize`, `fisheye-motion` |
 | Maps: satellite push, region lift, photo pins, arcs | `satellite-map-story` | `remotion-maps` (Mapbox token), `threejs-earth-render`, `animation-skills:map-route` |
+| Product demo / promo / SaaS / app / AI tool film (ElevenLabs standard) | `ui-promo-film` → `edit-kit:saas` build | `edit-kit:product-launch-video`, `motion-graphics-starter`, `edit-kit:fx` |
+| Logo or brand reveal, launch teaser, closing brand moment | `brand-reveal-film` | `logo-animation`, `3d-animator`, Blender |
+| Study a reference video the user sends | `reel-production/scripts/teardown.sh` → `references/teardowns.md` | `earshot`, `lookmeter.py` |
 | Luxury product film (explode/assemble, black stage, Hublot/Apple grade), any category | `premium-product-film` | `edit-kit:blender-product-film`, Blender pack, `lookmeter.py` |
 | 3D product checklist ad: orbit, macro detail, x-ray, checklist cards | `product-check-reel` | Blender pack (`blender-clothing`, `cloth-sim`, `blender-lighting-lookdev`), Blender MCP |
 | Heritage / history collage: archive stacks, cut-outs, giant numbers, film plates | `archival-collage-story` | `rembg`, `realesrgan-ncnn-vulkan`, `colorize`, `effects` |

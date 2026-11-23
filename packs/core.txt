@@ -172,3 +172,5 @@ fetch hyperframes-to-after-effects clipwing/skills skills/hyperframes-to-after-e
 skill premium-product-film
 skill brief-amplifier
 fetch voicestudio debpalash/VoiceStudio skills/voicestudio
+skill ui-promo-film
+skill brand-reveal-film
