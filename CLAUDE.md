@@ -38,7 +38,7 @@ Before building, look at `references/` if it exists: two finished videos Claude 
 | Maps: satellite push, region lift, photo pins, arcs | `satellite-map-story` | `remotion-maps` (Mapbox token), `threejs-earth-render`, `animation-skills:map-route` |
 | 3D product checklist ad: orbit, macro detail, x-ray, checklist cards | `product-check-reel` | Blender pack (`blender-clothing`, `cloth-sim`, `blender-lighting-lookdev`), Blender MCP |
 | Heritage / history collage: archive stacks, cut-outs, giant numbers, film plates | `archival-collage-story` | `rembg`, `realesrgan-ncnn-vulkan`, `colorize`, `effects` |
-| Voiceover that sounds alive (Indian English, premium, relatable) | `voiceover-direction`: one continuous Kokoro read (`hm_omega` male default, `hf_alpha` female) with stress marks, `vo_polish.py`, measured against references | `edge-tts` en-IN; Chatterbox expressive cloning (GPU, consenting voice only) |
+| Voiceover that sounds alive (Indian English, premium, relatable) | `voiceover-direction`: one continuous Kokoro read (`hm_omega` male default, `hf_alpha` female) with stress marks, `vo_polish.py`, measured against references | `voicestudio` (designed/cloned voices); Chatterbox (GPU, consenting voice only); edge-tts drafts only |
 | Captions with depth (word behind the head) | `depth-captions` (rembg `birefnet-portrait`, Whisper snapped to onsets) | `caption-animation`, `remotion-captions` |
 | Learn a technique from a YouTube video or podcast | `/learn` (installed user-wide) | |
 | Sound design from real recordings | `real-sfx` (your SOUNDE pack + CC0 + UI cues, frame-exact placement, critique) | `real-sound` (full launch-film soundtrack with licence audit), `sound-effects`, `beat-sync-editing`, `library/` |
