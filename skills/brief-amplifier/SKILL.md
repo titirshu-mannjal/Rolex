@@ -51,6 +51,9 @@ PROCESS   research → brief → voice first, lock the timeline to it → build 
           device through ONE shared function → preview, contact sheet, frame-by-frame motion check, fix round →
           formats, stems, gate.py.
 WHAT MAKES IT  3-5 bullets naming why this film will work, written before building; check them at QA.
+REFERENCE FIT  which references and nuances this film borrows from (reel-production/references/teardowns.md,
+          craft-nuances.md), each with its job here; which were considered and rejected, and why. Borrow the
+          principle, not the surface. A reference is copied closely ONLY when the user explicitly asks for that.
 ```
 
 ## Step 4: show it, then go
@@ -69,6 +72,8 @@ Amplified (shortened):
 - SOUND: pour, porcelain clink on the landing, wind over the hills, a soft chime on the logo; silence before the hero.
 
 ## Rules
+
+- References are a vocabulary, not a template. Decide per script what serves it (often 20-80% of a reference, never all of it by default); a nuance that does not have a job in this film stays out.
 
 - Numbers over adjectives: hex colours, seconds, BPM, LUFS, f-stops, sizes.
 - One idea, one device, one accent colour, one hook.

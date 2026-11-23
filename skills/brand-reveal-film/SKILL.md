@@ -5,6 +5,8 @@ description: Direct a cinematic brand or logo reveal / launch teaser (the Farbor
 
 # Brand reveal film
 
+> A vocabulary, not a template: use the parts that serve this film's script, brand and audience, adapt them, and record what you used and rejected under REFERENCE FIT in `brief.md` (see `reel-production/references/craft-nuances.md`). Reproduce the reference closely only when the user asks for that explicitly.
+
 Built from a teardown of a Farborn launch teaser (29 s, 9:16; `productions/_research/logo-reveal/`, numbers in `reel-production/references/teardowns.md`).
 
 ## What it does, measured

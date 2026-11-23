@@ -31,6 +31,10 @@ The user wants one prompt in, a finished film out. Work end to end without stopp
 | 7 | **Edit + QA** | the branch core (below) on `hyperframes`; `edit-kit:motion-doctrine` seams; `edit-kit:qa` + `reel-editor-qa` agent | handing off to an editor: `hyperframes-to-after-effects` | `npx hyperframes check` clean; frames pulled at every cut and pop and looked at; captions in safe zones; QA blockers fixed and re-rendered |
 | 8 | **Deliver** | `reel-export`, `loop-cover`, `instagram-skills:ig-caption-writer` | other platforms: `youtube-export`, `tiktok-skills:*` | 1080x1920 H.264, credits in caption for CC BY assets, `sources.md` complete |
 
+## References are a vocabulary, not a template
+
+The recipe skills (`ui-promo-film`, `brand-reveal-film`, `premium-product-film`, `product-check-reel`, `satellite-map-story`, `archival-collage-story`) and `references/craft-nuances.md` describe what worked in the user's references and why. For each film, pick what serves its script, brand, audience and tone, adapt it, and leave the rest; write the choices in `brief.md` under REFERENCE FIT. Copy a reference closely only when the user explicitly asks. Example: a reveal is usually voiceless (Farborn, Hublot), but if the script needs explanation the voice stays and the reveal becomes its pause.
+
 ## Non-negotiable gates (added after an adversarial review; `scripts/gate.py` enforces the measurable ones)
 
 1. **Three concept routes + a mood board.** `creative-director` writes 3 different routes; build a mood board of 6-10 frames from the product's own category (watch films for watches, not apparel reels). Pick one route on purpose and write why.

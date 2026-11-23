@@ -5,6 +5,8 @@ description: Reference-level luxury product CG film (the Hublot / Apple / perfum
 
 # Premium product film
 
+> A vocabulary, not a template: use the parts that serve this film's script, brand and audience, adapt them, and record what you used and rejected under REFERENCE FIT in `brief.md` (see `reel-production/references/craft-nuances.md`). Reproduce the reference closely only when the user asks for that explicitly.
+
 Built from a frame-by-frame teardown of a Hublot Big Bang Unico film (15 s, `productions/_research/watch-explode-ref/`) against our own first watch ad, which looked flat. Everything below is what separated them. Measure every film against a reference with `scripts/lookmeter.py` before calling the look done.
 
 ## Why the reference looks expensive and ours did not (measured)

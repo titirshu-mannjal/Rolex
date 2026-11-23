@@ -5,6 +5,8 @@ description: Direct a product demo, promo, launch or SaaS/app film at the Eleven
 
 # UI promo film
 
+> A vocabulary, not a template: use the parts that serve this film's script, brand and audience, adapt them, and record what you used and rejected under REFERENCE FIT in `brief.md` (see `reel-production/references/craft-nuances.md`). Reproduce the reference closely only when the user asks for that explicitly.
+
 Built from a teardown of ElevenLabs' "Eleven Agents Architect" launch film (67 s, 16:9; `productions/_research/elevenlabs-promo/`, numbers in `reel-production/references/teardowns.md`). It is the reference for every product demo and promo. Make ours at least this good.
 
 ## What it does, measured
