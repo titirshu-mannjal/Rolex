@@ -115,7 +115,7 @@ rm -rf "$WORK"
 if [ $TOOLS -eq 1 ]; then
   echo "== Command-line tools"
   if command -v uv >/dev/null; then
-    for t in yt-dlp auto-editor whisper-ctranslate2 edge-tts depthflow "rembg[cpu,cli]" "earshot[listen,mcp] @ git+https://github.com/Leonxlnx/earshot"; do
+    for t in yt-dlp auto-editor whisper-ctranslate2 edge-tts depthflow "rembg[cpu,cli]" "earshot[listen,mcp,images] @ git+https://github.com/Leonxlnx/earshot"; do
       run uv tool install -q "$t" </dev/null >/dev/null 2>&1 && echo "  + $t" || echo "  ! $t failed (install it by hand)"
     done
   else
