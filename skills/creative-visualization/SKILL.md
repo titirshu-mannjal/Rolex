@@ -54,7 +54,7 @@ Motion rules that apply to every family: frame 0 already moving; eased (never li
 | Domain | Strong visual metaphors | Clichés to avoid | Motion temperament | Sound temperament |
 |---|---|---|---|---|
 | Fintech, payments | money as light/flow, a line that becomes a route, cards stacking, instant ripple | coin rain, piggy banks, rocket to the moon | precise, quick, clean easing | crisp UI ticks, soft confirm chime |
-| Lending, credit, B2B finance (e.g. Mannjal) | paperwork transforming into one clean flow, partners as connected nodes, a journey with no stops, a ledger drawing itself | handshakes on white, stacks of rupee notes, bank buildings | steady, trustworthy, no gimmicks, measured pace | warm low pad, paper and stamp foley turning into soft digital clicks |
+| Lending, credit, B2B finance | paperwork transforming into one clean flow, partners as connected nodes, a journey with no stops, a ledger drawing itself | handshakes on white, stacks of rupee notes, bank buildings | steady, trustworthy, no gimmicks, measured pace | warm low pad, paper and stamp foley turning into soft digital clicks |
 | Health, wellness | breath, rhythm, cells, light through water, growth | pills raining, generic doctors, heart-rate line everywhere | slow, organic, breathing | soft air, heartbeat sub only if meaningful |
 | Food, beverage | macro texture, steam, pour, slow-motion splash, ingredients assembling | stock "happy family at table" | sensual slow-mo then quick cuts on the beat | crunch, sizzle, pour, fizz (real foley) |
 | Travel, places | maps and routes, a journey through a window, passport stamps, light changing through the day | spinning globe, airplane icon on a dotted line | flowing, continuous camera, parallax | ambience beds of place, music swell |

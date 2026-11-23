@@ -7,8 +7,8 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$1"; [ -f "$SRC" ] && SRC="$(cd "$(dirname "$SRC")" && pwd)/$(basename "$SRC")"
 OUT="$2"; mkdir -p "$OUT"; cd "$OUT"
-PY="${LOOK_PY:-$HOME/.local/share/uv/tools/rembg/bin/python}"   # any python with numpy + Pillow
-if [ -f "$SRC" ]; then cp "$SRC" ref.mp4; else yt-dlp -q --no-warnings -o "ref.%(ext)s" --remux-video mp4 "$SRC"; fi
+PY="${LOOK_PY:-}"; for c in python3 "$HOME/.local/share/uv/tools/rembg/bin/python"; do [ -z "$PY" ] && "$c" -c "import PIL, numpy" 2>/dev/null && PY="$c"; done   # any python with numpy + Pillow
+if [ -f "$SRC" ]; then [ "$SRC" -ef ref.mp4 ] || cp "$SRC" ref.mp4; else yt-dlp -q --no-warnings -o "ref.%(ext)s" --remux-video mp4 "$SRC"; fi
 ffprobe -v error -show_entries format=duration:stream=codec_type,width,height,r_frame_rate -of compact ref.mp4 | tee probe.txt
 mkdir -p f; ffmpeg -v error -y -i ref.mp4 -vf "fps=2,scale=320:-1,drawtext=text='%{pts\:hms}':x=4:y=4:fontsize=14:fontcolor=yellow:box=1:boxcolor=black" f/%03d.jpg
 ls f/*.jpg | split -l 40 - grp_; i=0; for g in grp_*; do magick montage $(cat "$g") -tile 8x -geometry +2+2 -background black "sheet_$i.jpg"; i=$((i+1)); done; rm -f grp_*
@@ -19,7 +19,9 @@ whisper-ctranslate2 audio.wav --model small --device cpu --compute_type int8 --w
 python3 -c "
 import json
 d=json.load(open('audio.json')); open('transcript.txt','w').write('\n'.join(f\"{s['start']:6.2f}-{s['end']:6.2f}  {s['text'].strip()}\" for s in d['segments']))" 2>/dev/null || echo "(no speech)" > transcript.txt
-earshot critique ref.mp4 --video ref.mp4 --threads 3 > earshot_critique.txt 2>&1 || true
-earshot timeline audio.wav --threads 3 > earshot_timeline.txt 2>&1 || true
-"$PY" "$HERE/../../premium-product-film/scripts/lookmeter.py" --ref ref.mp4 > look.txt 2>&1 || true
-echo "done: read sheet_*.jpg, transcript.txt, earshot_*.txt, look.txt; write teardown.md"
+earshot critique ref.mp4 --video ref.mp4 --threads 3 > earshot_critique.txt 2>&1 || echo "earshot critique failed (see earshot_critique.txt)"
+earshot timeline audio.wav --threads 3 > earshot_timeline.txt 2>&1 || echo "earshot timeline failed (see earshot_timeline.txt)"
+[ -n "$PY" ] && "$PY" "$HERE/../../premium-product-film/scripts/lookmeter.py" --ref ref.mp4 > look.txt 2>&1 || echo "lookmeter failed (needs a python with numpy + Pillow)"
+echo "== outputs"; for f in probe.txt sheet_0.jpg cuts.txt audio.wav transcript.txt earshot_critique.txt earshot_timeline.txt look.txt; do
+  if [ -s "$f" ] && ! grep -qiE "^(Traceback|error)" "$f" 2>/dev/null; then echo "ok      $f"; else echo "MISSING $f"; fi; done
+echo "next: read sheet_*.jpg and the text files, then add a row to reel-production/references/teardowns.md"

@@ -14,7 +14,7 @@ Structure learned from a spec-ad prompt whose output was exceptional (an Amazon 
 - The product or subject: what it is, the one truth that matters, real specs (write sources to `research/facts.md`).
 - The brand's own symbol: logo shape, colour, signature product feature, slogan, origin. The best ideas are hidden here.
 - The category's best references: 2-3 premium films of this category (`yt-dlp`, frame sheets, `premium-product-film/scripts/lookmeter.py` for their numbers).
-- The audience: default to well-educated Indians who love exploring; relatable, polished Indian English; premium but warm.
+- The audience: from the client profile (`client-studio`). With no profile: ask once if it changes the film; the user's own default is well-educated Indians who love exploring (relatable, polished Indian English, premium but warm).
 
 ## Step 2: find the idea (the step that makes it phenomenal)
 
@@ -44,8 +44,7 @@ VOICE     persona (Kokoro hm_omega / hf_alpha or a VoiceStudio designed voice), 
 MUSIC     licensed track or brief: tempo (BPM), key, instrumentation, arrangement map tied to beats (where the drop,
           the lift, the breath, the final chord fall). Pick with earshot rank.
 SOUND     the cue plan by action (salient hits about 1/s; quiet micro-sounds such as typing ticks may be denser),
-          what must be silent (nothing within 60 ms of the hero hit), mix (voice -16..-14 LUFS, music at least
-          12 dB under every word, master -14 LUFS, ≤ -1.25 dBTP).
+          what must be silent (nothing within 60 ms of the hero hit), mix per the reel-production numbers table.
 BRAND     logo handling (move, scale, fade, mask only; never redraw or recolour; nothing drawn over it at rest),
           claims with qualifiers and sources, IP safety (own or licensed assets, no other brands' marks),
           spec-ad disclaimer when the brand is not the client.

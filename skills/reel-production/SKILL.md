@@ -7,7 +7,7 @@ description: The director's playbook for any premium Reel, ad or short - researc
 
 Hundreds of skills are installed. Overlap is the enemy: two half-used tools make a worse film than one tool used fully. This playbook picks **one default per stage**, names the **switch conditions**, and enforces **gates**. Every production keeps a ledger (`TOOLS.md`) so the choice of each tool, and each skipped alternative, is written down.
 
-The full stage-by-stage map of skills is in `references/skill-map.md`. Read it at the start of every production and again before each stage.
+Tools: `references/skill-map.md` has one winner per job and a NOT-FOR list; consult it when choosing a branch or a tool, not before every stage. Start a rendering session with `scripts/preflight.sh`.
 
 ## Autonomy
 
@@ -21,6 +21,7 @@ The user wants one prompt in, a finished film out. Work end to end without stopp
 
 | # | Stage | Default | Switch when | Gate (must pass to continue) |
 |---|---|---|---|---|
+| -1 | **Client** | `client-studio`: identify the client, load (or create) `~/.claude/motion-kit/brands/<client>/`; productions go in `productions/<client>/<slug>/` | personal/spec work: profile optional | the brief cites the client profile; nothing from another client is used |
 | 0 | **Research** | `anthropic-skills:deep-research` or WebSearch; every reference video through `scripts/teardown.sh` (frames, cuts, transcript, earshot critique and timeline, look numbers), then a row in `references/teardowns.md` | the product is the user's own: ask for photos/specs, research category and competitors instead | facts verified with sources in `research/facts.md`; reference reels broken down (shot list, timings, type, sound map, VO prosody) |
 | 1 | **Brief + idea** | **`brief-amplifier`** first (it runs `creative-visualization` for the idea and the motion vocabulary) (turns a short request into the full super-brief: brand-derived idea + through-line device, look in numbers, beat sheet on a music grid, voice lines timed, music, sound, brand rules), with `creative-director` for the 3 routes | a series: `manjuforge` + bible | one idea in one line; format, length, audience, CTA written in `brief.md` |
 | 2 | **Script + voice** | `reel-writer` agent, then `voiceover-direction` | dialogue or characters: `screenwriting:*`; designed/cloned voice or dubbing: `voicestudio`; user records their own voice: DeepFilterNet or `voicestudio audio clean` | hook in 1-2 s; VO is one continuous read; pace 2.6-3.3 words/s; prosody measured against a reference; Whisper reads every word right |
@@ -31,13 +32,30 @@ The user wants one prompt in, a finished film out. Work end to end without stopp
 | 7 | **Edit + QA** | the branch core (below) on `hyperframes`; `edit-kit:motion-doctrine` seams; `edit-kit:qa` + `reel-editor-qa` agent | handing off to an editor: `hyperframes-to-after-effects` | `npx hyperframes check` clean; frames pulled at every cut and pop and looked at; captions in safe zones; QA blockers fixed and re-rendered |
 | 8 | **Deliver** | `reel-export`, `loop-cover`, `instagram-skills:ig-caption-writer` | other platforms: `youtube-export`, `tiktok-skills:*` | 1080x1920 H.264, credits in caption for CC BY assets, `sources.md` complete |
 
+## Free first, legitimately
+
+Paid capabilities have free routes in `references/free-routes.md` (open models on Hugging Face Spaces via `scripts/hf_space.py`, local voices, free-licence libraries). Never bypass paywalls, farm accounts or use others' keys. When a paid tool would clearly improve a client deliverable, say so with the cost and let the user decide.
+
 ## References are a vocabulary, not a template
 
 The recipe skills (`ui-promo-film`, `brand-reveal-film`, `premium-product-film`, `product-check-reel`, `satellite-map-story`, `archival-collage-story`) and `references/craft-nuances.md` describe what worked in the user's references and why. For each film, pick what serves its script, brand, audience and tone, adapt it, and leave the rest; write the choices in `brief.md` under REFERENCE FIT. Copy a reference closely only when the user explicitly asks. Example: a reveal is usually voiceless (Farborn, Hublot), but if the script needs explanation the voice stays and the reveal becomes its pause.
 
+## The numbers (single source; `gate.py` enforces them, other skills point here)
+
+| Item | Target |
+|---|---|
+| Master loudness | -14 LUFS integrated (pass -15..-13), true peak ≤ -1.0 dBTP (aim -1.5) |
+| Voice vs music | voice is the loudest element; music at least 12 dB under every word (calm/premium films 18-24 dB) |
+| Voice pace (words/s over the spoken span) | calm/premium 2.1-2.8 · standard 2.6-3.3 · energetic 3.0-3.6 (`gate.py --pace calm|standard|energetic`) |
+| Salient sound hits | about 0.8-1.3 per second, never two within 0.25 s, no same sample within 3 s; quiet micro-sounds may be denser |
+| Sync | ≥ 85% of visual events have a sound within 100 ms (`earshot critique --video`) |
+| Formats | 9:16 1080x1920 · 4:5 1080x1350 · 1:1 1080x1080 · 16:9 1920x1080; ≥ 25 fps; ≥ 12 Mb/s; one video + one audio stream |
+| Safe zone (1080x1920) | text and product inside x 150-930, y 210-1530; reading text ≥ 34 px (never < 28 px) |
+| Look | match the chosen reference within `lookmeter.py` tolerance |
+
 ## Non-negotiable gates (added after an adversarial review; `scripts/gate.py` enforces the measurable ones)
 
-1. **Three concept routes + a mood board.** `creative-director` writes 3 different routes; build a mood board of 6-10 frames from the product's own category (watch films for watches, not apparel reels). Pick one route on purpose and write why.
+1. **Three concept routes + a mood board.** `creative-visualization` (inside `brief-amplifier`) writes 3 different routes; build a mood board of 6-10 frames from the product's own category (watch films for watches, not apparel reels). Pick one route on purpose and write why.
 2. **Look by category.** Premium watches, jewellery, perfume, tech: dark stage, low-key grazing light, light sweeps (`edit-kit:blender-product-film`, `apple-launch-film` grammar). Apparel, food, everyday goods: bright studio (`product-check-reel`). Never default.
 3. **Hero-asset lookdev gate.** Before animating anything: 100% stills of the product beside 2 real category references. It must read as a real product (bevels, real materials, micro-detail, correct scale). Cycles for glass and polished metal; HDRI from Poly Haven via Blender MCP `search_assets`. Fails if any part reads as a primitive.
 4. **Proof per claim.** Every feature gets a demonstration (stress test, comparison ✗/✓, in-use context with its own colour), never a chip alone.
@@ -46,10 +64,10 @@ The recipe skills (`ui-promo-film`, `brand-reveal-film`, `premium-product-film`,
 7. **Ending standard.** Product in use (a wrist, a hand, a person) + one CTA (comment keyword or follow) + last frame loops to frame 0 + a cover frame (`loop-cover`).
 8. **Music stage.** Choose music by brief and reference (tempo, era, instrumentation) with `earshot rank`; no generic stock by default.
 9. **Grade pass.** One grade per beat (`compositing`, `lookdev`), checked on the frame sheet.
-10. **Localisation.** Indian settings, occasions, casting (hands, skin tone), ₹ price card when relevant; VO checked by Whisper for meaning.
+10. **Localisation.** Match the client's audience from its profile (settings, occasions, casting, currency, language); for Indian audiences that means Indian settings, casting and ₹; VO checked by Whisper for meaning.
 11. **Sound budget.** About 1 salient hit per second on average (measured in the user's references), never two within 0.25 s, no same sample within 3 s, no trailer impacts on calm premium products, one signature motif. Music about 20-24 dB under the voice.
 12. **Independent critique.** `shotkit:visual-asset-critic` or the `impeccable-finish-reviewer` agent on the frame sheet, plus `edit-kit:qa` and `reel-editor-qa`; `qa.md` lists every blocker as `- [ ]` until fixed.
-13. **Delivery.** `python3 scripts/gate.py <prod> --video final.mp4 --vo-json ... --script ... --cues ...` must print GATE PASSED: files present, pace in range, word error ≤ 8%, SFX budget, -15..-13 LUFS and ≤ -1 dBTP, ≥ 12 Mb/s, no stray streams. Export 15-20 Mb/s.
+13. **Delivery.** `python3 scripts/gate.py <prod> --video final.mp4 --vo-json ... --script ... --cues ...` must print GATE PASSED against the numbers table (files, pace, words, sound budget, loudness, format). Export 15-20 Mb/s.
 
 ## Branches: one core tool each, then its sub-tools
 
@@ -69,7 +87,7 @@ The recipe skills (`ui-promo-film`, `brand-reveal-film`, `premium-product-film`,
 **Cross-cutting gateways, every branch:**
 - **Motion:** `edit-kit:motion-doctrine` before composing any multi-scene film (one continuous camera move: exit vector sets entry vector, stamped seams, `seam-gate`), with `edit-kit:cut-the-curve` (seam catalogue) and `edit-kit:seam-craft` (no white flashes). `animation-principles` for weight in every tween.
 - **Voice:** `voiceover-direction` (Kokoro default, measured). When the user wants a designed or cloned voice, or dubbing: `voicestudio` (local app: voice design from a description, cloning of consented voices, dubbing in 646 languages, clean-up). A/B the candidates with `earshot ab` and the prosody meter.
-- **Sound:** `real-sfx` places real recordings from the indexed libraries; `earshot critique --video` judges the mix (target: launch-grade). Default mix numbers (Edit Kit house): voice -14 LUFS and loudest, each SFX peak -17 dBFS at most one per 0.25 s, music about 24 dB under the voice and ducked; no voice: music -20 LUFS.
+- **Sound:** `real-sfx` places real recordings from the indexed libraries; `earshot critique --video` judges the mix (target: launch-grade). Mix numbers: the numbers table above (each SFX peaking about -17 dBFS is a good starting level).
 - **QA:** `npx hyperframes check` + frames at every cut and pop + `edit-kit:qa` + `reel-editor-qa` + `earshot critique`.
 
 **Duplicates: which copy to use.** Edit Kit ships its own `threejs-animation`, `particle-system`, `shader-glsl`, `video-shotcraft`, `painted-animation`, `ffmpeg`, `slideshow`, `figma`, `remotion-to-hyperframes`, `frontend-design`. Inside a branch-A/B/E build use the `edit-kit:` copy (its links point to `edit-kit:fx`); everywhere else use the standalone skill. Never load both copies for one job.

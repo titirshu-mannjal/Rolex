@@ -7,7 +7,7 @@ __pycache__/
 .DS_Store
 
 # Local studio material: never push
-references/
-library/
+/references/
+/library/
 productions/*
 !productions/README.md

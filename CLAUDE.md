@@ -1,78 +1,42 @@
 # Rolex studio
 
-You are working in **Rolex**, a studio for premium short-form video: anime-style series, cinematic shorts, motion-graphics films and Instagram Reels that look like a real studio made them, never like AI slop.
+You are working in **Rolex**, a studio that makes premium short-form video for many different companies: product demos and promos, product CG and explode films, brand reveals, Reels, heritage and map stories, footage edits, anime and cinematic shorts. It must look like a real studio made it, never like AI slop.
 
-The skills, plugins and agents below are installed user-wide by `install.sh`. If one is missing, run `bash install.sh` from this folder (see "Installing" at the end).
+## Start every video here (in this order)
 
-## How to start any video
+1. `reel-production` skill: the director's playbook. Spine: client → research → brief → script and voice → look → storyboard → build → sound → edit and QA → deliver, one default tool per stage, one numbers table, hard gates (`scripts/gate.py`), a `TOOLS.md` ledger.
+2. `client-studio`: which company is this for? Load or create its private profile (`~/.claude/motion-kit/brands/<client>/`). Every brand, voice, audience and claim comes from there.
+3. `brief-amplifier` (runs `creative-visualization`): the user writes short prompts on purpose; expand them into a full brief with an original idea.
+4. One branch recipe from the playbook (`ui-promo-film`, `premium-product-film`, `brand-reveal-film`, `edit-kit:director`, …).
 
-First run `brief-amplifier`: the user writes short prompts on purpose; expand them into a full super-brief (idea, look in numbers, beat sheet, voice, music, sound, brand) before any work. Then use the `reel-production` skill: the director's playbook. It is the spine (research → brief → script and voice → look → storyboard → build → sound → edit and QA → deliver) with one default tool per stage, hard gates and a `TOOLS.md` ledger, and it routes each film to one branch: footage edit (`edit-kit:director`), code-built promo (`edit-kit:saas`), 3D product (`product-check-reel`), story/place/history, special look (`edit-kit:video-clone`), music-driven, explainer. It works end to end and stops only for money, publishing, licences and consent.
-Work goes in `productions/<slug>/`. A series keeps its bible in `productions/<series>/bible/` and every episode reads it first.
+Look up any other tool only in `skills/reel-production/references/skill-map.md` (one winner per job, plus a NOT-FOR list). Run `skills/reel-production/scripts/preflight.sh` at the start of a session that will render.
 
-Before building, look at `references/` if it exists: two finished videos Claude made in this workflow, with their full source, treatment, storyboards and sound scripts. Match or beat that bar.
+Work goes in `productions/<client>/<slug>/`. Work end to end; stop only for money, publishing, licences, consent, or a brief where two different films would both fit.
 
 ## The bar
 
-- One idea per video. The hook lands in the first 1-2 s. The ending loops or pays off.
-- Direct it like film or anime: motivated camera, shot sizes that vary with purpose, cuts on action or beat, colour script per beat, consistent characters on model.
-- Motion has weight: eased, with anticipation and follow-through (`animation-principles`, `animation-basics`, `disney-animation-rule-skill`). No linear slides, no default fades.
-- Restraint reads as premium: limited palette, big readable type (phone first), safe zones clear of Instagram UI, sound designed rather than stacked.
-- Render, look at the frames, fix, re-render. Never call a cut done without looking.
+- One idea per video. The hook lands in the first second; frame 0 already moves. The ending loops or pays off.
+- References are a vocabulary, not a template: take what serves this script, brand and audience; copy closely only when the user asks.
+- Motion has weight (eased, anticipation, follow-through); real detail everywhere the camera looks; restraint reads as premium.
+- Sound is designed: about 1 salient hit per second, visual events on sound, voice on top.
+- Render, look at the frames, measure (gate, earshot, lookmeter), fix, re-render. Never call a cut done without looking.
 
-## Which tool for which job
+## Rules
 
-| Goal | First choice | Also |
-|---|---|---|
-| Concept, big idea, how to visualise a subject | `creative-visualization` (lenses, animation atlas, domain guide) | `creative-director`, `papercut-strategy` |
-| Script, hook, series arcs | `reel-writer` agent, `screenwriting:*` | `social-short-production`, `instagram-skills:*`, `papercut-hook`, `manjuforge` (series memory) |
-| Direction, shot list, blocking | `cinematic-director` | `visual-skills:video`, `cinematic-shot-direction`, `editing-montage` |
-| Storyboard / animatic | `reel-storyboard-artist` agent, `shotkit:*` | `storyboard-previsualization`, `papercut-storyboard` |
-| Art direction, colour script, style bible | `reel-art-director` agent, `visual-style-direction` | `anime-mv-art-direction`, `lighting-direction`, `production-design-direction`, `character-design-continuity` |
-| **Frames / keyframes / stills** | Draw them in code: HyperFrames or Remotion stills, `animation-styles`, `shader-glsl` | Blender (`blender-agent-skills:*`, `blender-stylized-npr`), Rive (`rive-mcp:rive-designer`), ComfyUI (`comfy:*`, needs a GPU) |
-| Anime / MV look | `vocaloid-style-mv`, `anime-animation-production` | `kinetic-reel:painted-animation`, `animation-styles` (cel anime, ukiyo-e…), `blender-stylized-npr` (toon 3D) |
-| Characters that act | Rev2D MCP (rigged 2D puppets, lip-flap), `what-if-animation` | `line-art-animation`, `animation-skills:stick-figure`, `animation-skills:zach-3d-films`, Blender rigging |
-| Motion graphics, kinetic type | `hyperframes` / `remotion` + `gsap-*` | `kinetic-reel:kinetic-reel`, `bang-motion`, `hyperframes-motion-reel`, `kinetic-typography` |
-| Cinematic 3D | `threejs-*`, Blender pack | `title-sequence-3d`, `particle-system`, `blender-claymation` |
-| Explainers | `manim-skill:manim-skill`, `explainer-studio:*` | `motion-canvas`, `animation-skills:kurzgesagt`, `papercut-*` |
-| One photo → motion | `perspective-illusion`, `pixel2motion`, DepthFlow CLI | `object-separation`, `colorize`, `fisheye-motion` |
-| Maps: satellite push, region lift, photo pins, arcs | `satellite-map-story` | `remotion-maps` (Mapbox token), `threejs-earth-render`, `animation-skills:map-route` |
-| Product demo / promo / SaaS / app / AI tool film (ElevenLabs standard) | `ui-promo-film` → `edit-kit:saas` build | `edit-kit:product-launch-video`, `motion-graphics-starter`, `edit-kit:fx` |
-| Logo or brand reveal, launch teaser, closing brand moment | `brand-reveal-film` | `logo-animation`, `3d-animator`, Blender |
-| Study a reference video the user sends | `reel-production/scripts/teardown.sh` → `references/teardowns.md` | `earshot`, `lookmeter.py` |
-| Luxury product film (explode/assemble, black stage, Hublot/Apple grade), any category | `premium-product-film` | `edit-kit:blender-product-film`, Blender pack, `lookmeter.py` |
-| 3D product checklist ad: orbit, macro detail, x-ray, checklist cards | `product-check-reel` | Blender pack (`blender-clothing`, `cloth-sim`, `blender-lighting-lookdev`), Blender MCP |
-| Heritage / history collage: archive stacks, cut-outs, giant numbers, film plates | `archival-collage-story` | `rembg`, `realesrgan-ncnn-vulkan`, `colorize`, `effects` |
-| Voiceover that sounds alive (Indian English, premium, relatable) | `voiceover-direction`: one continuous Kokoro read (`hm_omega` male default, `hf_alpha` female) with stress marks, `vo_polish.py`, measured against references | `voicestudio` (designed/cloned voices); Chatterbox (GPU, consenting voice only); edge-tts drafts only |
-| Captions with depth (word behind the head) | `depth-captions` (rembg `birefnet-portrait`, Whisper snapped to onsets) | `caption-animation`, `remotion-captions` |
-| Learn a technique from a YouTube video or podcast | `/learn` (installed user-wide) | |
-| Sound design from real recordings | `real-sfx` (your SOUNDE pack + CC0 + UI cues, frame-exact placement, critique) | `real-sound` (full launch-film soundtrack with licence audit), `sound-effects`, `beat-sync-editing`, `library/` |
-| Hearing what you cannot hear (judge, rank, A/B, sync, realness) | `earshot` CLI (`earshot realness/rank/compare/timeline/critique`) | `voiceover-direction` prosody meter |
-| A specific real sound the libraries lack | `openverse-sounds` (commercial-safe licences only, credits written) | Freesound CC0, Mixkit |
-| 3D film in code, no Blender | `3d-animator` (three.js, sub-frame motion blur and DOF, local-only skill) | `threejs-*`, Blender pack |
-| Proven motion-graphics prompts and styles | `motion-graphics-starter` (local-only kit) | `hyperframes`, `kinetic-reel:*` |
-| Hand a HyperFrames film to After Effects | `hyperframes-to-after-effects` | |
-| Edit raw footage (reels, YouTube, podcast), 11 edit styles | `edit-kit:edit` → `edit-kit:director` | `edit-kit:reels`, `edit-kit:youtube`, `edit-kit:fx`, `edit-kit:theme` |
-| Multi-scene continuity (one camera move across cuts) | `edit-kit:motion-doctrine` | `edit-kit:cut-the-curve`, `edit-kit:seam-craft` |
-| Designed or cloned voice, dubbing | `voicestudio` (local app, AGPL, installed separately) | `voiceover-direction` |
-| Edit, captions, export | `video-use`, `ffmpeg-skill`, `reel-export` | `caption-animation`, `reels-editor`, `loop-cover` |
-| Instagram packaging | `instagram-skills:*` | `social-media-skills:*` |
-
-Free tools only by default. Paid APIs (the `ai` pack) need the user's explicit OK.
+- Free tools by default; legitimate free routes for paid capabilities are in `skills/reel-production/references/free-routes.md`. Never bypass paywalls or use others' keys. Paid tools (the `ai` pack, `poppify`) only with the user's explicit OK.
+- Clients never mix: one client's logo, colours, voice, claims and assets never appear in another's film.
 
 ## Local-only folders (never commit or push)
 
-- `references/` - Claude-built reference videos and their source (confidential).
-- `library/` - sound effects, music, style references, and the user's licensed kits (`3d-animator`, `motion-graphics-starter-kit`) that must not go public.
-- `productions/` - all new work.
+- `references/` - two finished films made for one client (Mannjal), with source; confidential. Not the general bar (that is `skills/reel-production/references/teardowns.md`).
+- `library/` - sound effects, music, HDRIs, maps, the user's licensed kits (`3d-animator`, `motion-graphics-starter-kit`).
+- `productions/` - all work, one folder per client; `productions/REQUESTS.md` is the request ledger.
+- Client profiles live outside the repo in `~/.claude/motion-kit/brands/`.
 
 ## Installing (when asked to "install this repo")
 
-1. Clone to the permanent location if it is not already there (plugins are installed from this folder, so it must stay):
-   `git clone --depth 1 https://github.com/titirshu-mannjal/Rolex.git ~/.local/share/rolex/repo && cd ~/.local/share/rolex/repo`
-   If it exists, update it: `git -C ~/.local/share/rolex/repo pull --ff-only`. The repo is about 1.5 GB; run the clone in the background and wait.
-2. Show the packs (`bash install.sh --list`) and say that `core` is the default studio stack.
-3. Run `bash install.sh` for core, or `bash install.sh --packs core,blender,...` / `bash install.sh --all` if the user asked for more. Add `--tools` for yt-dlp, auto-editor, whisper-ctranslate2, edge-tts, DepthFlow, rembg, Real-ESRGAN, the Kokoro/Chatterbox voice engines and the editorial fonts.
-4. Report the summary line, any failures, and any MISSING system tools with the install command for the user's OS.
-5. Tell the user to restart Claude Code.
+1. Clone to the permanent location if needed (plugins install from it): `git clone --depth 1 https://github.com/titirshu-mannjal/Rolex.git ~/.local/share/rolex/repo`; if it exists, `git -C ~/.local/share/rolex/repo pull --ff-only` (about 1.5 GB: run in the background).
+2. `bash install.sh --list`; `core` is the default stack. Run `bash install.sh` (add `--packs …`, `--all`, `--tools` as asked; `--tools` adds yt-dlp, auto-editor, whisper, edge-tts, DepthFlow, rembg, Real-ESRGAN, earshot, the voice engines and fonts).
+3. Report the summary, failures and missing system tools with the install command; tell the user to restart Claude Code.
 
-Never delete existing skills: the installer moves replaced folders to `~/.claude/rolex-backup/<timestamp>/`. On Windows, run the installer from Git Bash or WSL.
+Never delete existing skills: the installer moves replaced folders to `~/.claude/rolex-backup/<timestamp>/`.

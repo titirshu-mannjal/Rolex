@@ -4,15 +4,17 @@ Usage: python3 gate.py <production_dir> --video <final.mp4> [--vo-json whisper.j
                       [--pace 2.6,3.3] [--sfx-max-rate 1.3]
 Checks (each prints PASS/FAIL with the number):
   files     brief.md script.md storyboard/ qa.md TOOLS.md sources.md research/facts.md exist; qa.md has no '- [ ]' open blockers
-  pace      words per second over the spoken span (Whisper word timestamps) inside --pace
+  pace      words per second over the spoken span (Whisper word timestamps) inside --pace calm|standard|energetic|lo,hi
   words     every script word heard by Whisper (word error rate <= 8%)
   sfx       salient hits (gain > -22 dB) per s <= --sfx-max-rate, none < 0.25 s apart, no same file twice within 3 s
   loudness  -15.0..-13.0 LUFS integrated, true peak <= -1.0 dBTP
-  delivery  1080x1920 (or 1920x1080), >= 25 fps, video bitrate >= 12 Mb/s, only one video + one audio stream
+  delivery  9:16, 4:5, 1:1 or 16:9 at 1080 width (or 1920x1080), >= 25 fps, video bitrate >= 12 Mb/s, only one video + one audio stream
 """
 import argparse, json, os, re, subprocess, sys
 
 FILES = ["brief.md", "script.md", "storyboard", "qa.md", "TOOLS.md", "sources.md", "research/facts.md"]
+PACE = {"calm": (2.1, 2.8), "standard": (2.6, 3.3), "energetic": (3.0, 3.6)}  # numbers table in reel-production
+SIZES = {(1080, 1920), (1080, 1350), (1080, 1080), (1920, 1080)}
 
 
 def words(text):
@@ -53,25 +55,28 @@ def loudness(video):
     out = subprocess.run(["ffmpeg", "-nostats", "-i", video, "-af", "ebur128=peak=true", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     summ = out[out.rfind("Summary:"):]
-    i = float(re.search(r"I:\s+(-?[\d.]+) LUFS", summ).group(1))
-    tp = float(re.search(r"Peak:\s+(-?[\d.]+) dBFS", summ).group(1))
-    return i, tp
+    mi, mp = re.search(r"I:\s+(-?[\d.]+) LUFS", summ), re.search(r"Peak:\s+(-?[\d.]+) dBFS", summ)
+    if not (mi and mp):
+        return None, None  # no audio stream
+    return float(mi.group(1)), float(mp.group(1))
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("prod"); ap.add_argument("--video", required=True)
     ap.add_argument("--vo-json"); ap.add_argument("--script"); ap.add_argument("--cues")
-    ap.add_argument("--pace", default="2.6,3.3"); ap.add_argument("--sfx-max-rate", type=float, default=1.3)
+    ap.add_argument("--pace", default="standard", help="calm | standard | energetic | lo,hi")
+    ap.add_argument("--profile", default="film", help="film | footage (storyboard optional)"); ap.add_argument("--sfx-max-rate", type=float, default=1.3)
     a = ap.parse_args(argv)
     res = []
-    missing = [f for f in FILES if not os.path.exists(os.path.join(a.prod, f))]
+    need = [f for f in FILES if not (a.profile == "footage" and f == "storyboard")]
+    missing = [f for f in need if not os.path.exists(os.path.join(a.prod, f))]
     qa = os.path.join(a.prod, "qa.md")
     open_items = len(re.findall(r"^\s*- \[ \]", open(qa).read(), re.M)) if os.path.exists(qa) else 0
     res.append(("files", not missing and open_items == 0, f"missing {missing or 'none'}, {open_items} open QA blockers"))
     if a.vo_json:
         ws = [w for s in json.load(open(a.vo_json))["segments"] for w in s["words"]]
-        lo, hi = map(float, a.pace.split(","))
+        lo, hi = PACE[a.pace] if a.pace in PACE else map(float, a.pace.split(","))
         pace = len(ws) / max(ws[-1]["end"] - ws[0]["start"], 0.1)
         res.append(("pace", lo <= pace <= hi, f"{pace:.2f} words/s (target {lo}-{hi})"))
         if a.script:
@@ -81,14 +86,14 @@ def main(argv=None):
         ok, msg = sfx_check(json.load(open(a.cues)), a.sfx_max_rate)
         res.append(("sfx", ok, msg))
     i, tp = loudness(a.video)
-    res.append(("loudness", -15.0 <= i <= -13.0 and tp <= -1.0, f"{i} LUFS, {tp} dBTP"))
+    res.append(("loudness", i is not None and -15.0 <= i <= -13.0 and tp <= -1.0, "no audio" if i is None else f"{i} LUFS, {tp} dBTP"))
     p = probe(a.video)
     v = [s for s in p["streams"] if s["codec_type"] == "video"]
     au = [s for s in p["streams"] if s["codec_type"] == "audio"]
     other = len(p["streams"]) - len(v) - len(au)
     vb = int(v[0].get("bit_rate") or p["format"].get("bit_rate") or 0) / 1e6 if v else 0
     num, den = map(int, v[0]["r_frame_rate"].split("/")) if v else (0, 1)
-    size_ok = v and (v[0]["width"], v[0]["height"]) in ((1080, 1920), (1920, 1080))
+    size_ok = v and (v[0]["width"], v[0]["height"]) in SIZES
     res.append(("delivery", bool(size_ok and num / den >= 25 and vb >= 12 and len(v) == 1 and len(au) == 1 and other == 0),
                 f"{v[0]['width']}x{v[0]['height']} {num/den:.0f} fps {vb:.1f} Mb/s, streams v{len(v)} a{len(au)} other{other}" if v else "no video"))
     for name, ok, msg in res:

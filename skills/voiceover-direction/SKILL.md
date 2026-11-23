@@ -21,15 +21,15 @@ The TTS did not lack pitch range. It was flat because each line was generated on
 
 ## Method
 
-1. **Write for the ear.** Short lines, one idea each, the selling word late in the line. Hook as a question or a promise. Use contrast ("so it never scratches"). Keep the brand's register: polished, relatable Indian English, polite and warm, not foreign-accented.
+1. **Write for the ear.** Short lines, one idea each, the selling word late in the line. Hook as a question or a promise. Use contrast ("so it never scratches"). Keep the client's register from its profile; for the user's own Indian audience that is polished, relatable Indian English, polite and warm, not foreign-accented.
 2. **Generate one continuous read** of the whole script (never line by line), so phrases link and the intonation builds.
    - Kokoro (`~/.local/share/rolex/tts/.venv`, Apache-2.0): `KPipeline(lang_code='b', device='cpu')`, voices `hm_omega` (male, user's default) or `hf_alpha` (female, clearest), speed ~0.97 for calm, 1.05-1.1 for energy.
    - Stress the words that sell with misaki markup: `[five](+2)`, `[never](+2)`, `[dark](+1)`.
    - Chatterbox (MIT) adds an `exaggeration` control (0.5-0.8) and can clone a voice from a 10 s clip: clone only a synthetic voice or a consenting actor. It needs the GPU; on CPU it is impractically slow. Do not run it while Blender holds the GPU.
 3. **Polish:** `python vo_polish.py in.wav out.wav --max-gap 0.28` tightens long pauses (0.19 for punchy ads, 0.28 for calm) and applies the broadcast chain (80 Hz high-pass, -2.5 dB at 250 Hz, +3 dB at 3.4 kHz, +2 dB air shelf, 3:1 compression, de-ess, limiter).
-4. **Measure:** `python prosody.py ref_vocals.wav ours.wav`. Target pace 2.6-3.3 words/s total, pauses near the reference, then run Whisper to check every word is intelligible (fix spellings the model mangles with phonetic respelling).
+4. **Measure:** `python prosody.py ref_vocals.wav ours.wav`. Target pace per the reel-production numbers table (calm 2.1-2.8, standard 2.6-3.3, energetic 3.0-3.6 words/s), pauses near the reference, then run Whisper to check every word is intelligible (fix spellings the model mangles with phonetic respelling).
 5. **Time the edit to the voice:** take Whisper word timestamps of the final VO and cut, pop and caption on those words. Open gaps in the VO (split and delay) for big visual moments, and land the next line on the payoff (e.g. a reassembly snap).
-6. **Mix:** VO on top, music ducked under it with sidechain compression, SFX tucked under consonants, -14 LUFS integrated, true peak ≤ -1.5 dBTP.
+6. **Mix:** VO on top, music ducked under it with sidechain compression, SFX tucked under consonants, levels per the reel-production numbers table.
 
 ## References in this folder
 
