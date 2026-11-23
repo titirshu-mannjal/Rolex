@@ -6,7 +6,7 @@ Checks (each prints PASS/FAIL with the number):
   files     brief.md script.md storyboard/ qa.md TOOLS.md sources.md research/facts.md exist; qa.md has no '- [ ]' open blockers
   pace      words per second over the spoken span (Whisper word timestamps) inside --pace
   words     every script word heard by Whisper (word error rate <= 8%)
-  sfx       hits/s <= --sfx-max-rate, no two hits < 0.25 s apart, no same file twice within 3 s
+  sfx       salient hits (gain > -22 dB) per s <= --sfx-max-rate, none < 0.25 s apart, no same file twice within 3 s
   loudness  -15.0..-13.0 LUFS integrated, true peak <= -1.0 dBTP
   delivery  1080x1920 (or 1920x1080), >= 25 fps, video bitrate >= 12 Mb/s, only one video + one audio stream
 """
@@ -30,8 +30,9 @@ def wer(ref, hyp):
     return d[len(h)] / max(len(r), 1)
 
 
-def sfx_check(cues, max_rate):
-    hits = sorted((c["t"], c["file"]) for c in cues)
+def sfx_check(cues, max_rate, salient_db=-22.0):
+    # Only salient hits count against the budget: quiet micro-sounds (typing ticks, ratchets) may be denser.
+    hits = sorted((c["t"], c["file"]) for c in cues if c.get("gain_db", 0) > salient_db)
     if not hits:
         return True, "no cues"
     span = max(hits[-1][0] - hits[0][0], 1.0)
@@ -39,7 +40,7 @@ def sfx_check(cues, max_rate):
     close = sum(1 for a, b in zip(hits, hits[1:]) if b[0] - a[0] < 0.25)
     repeat = sum(1 for i, (t, f) in enumerate(hits) for t2, f2 in hits[i + 1:] if f2 == f and t2 - t < 3.0)
     ok = rate <= max_rate and close == 0 and repeat == 0
-    return ok, f"{rate:.2f} hits/s (max {max_rate}), {close} pairs <0.25 s apart, {repeat} same-file repeats within 3 s"
+    return ok, f"{rate:.2f} salient hits/s (max {max_rate}), {close} pairs <0.25 s apart, {repeat} same-file repeats within 3 s"
 
 
 def probe(video):
@@ -104,5 +105,6 @@ if __name__ == "__main__":
         assert sfx_check([{"t": 0, "file": "a"}, {"t": 0.1, "file": "b"}], 2)[0] is False      # too close
         assert sfx_check([{"t": 0, "file": "a"}, {"t": 1, "file": "a"}], 2)[0] is False        # repeat within 3 s
         assert sfx_check([{"t": 0, "file": "a"}, {"t": 1, "file": "b"}, {"t": 2, "file": "c"}], 1.6)[0] is True
+        assert sfx_check([{"t": 0, "file": "a"}, {"t": 0.05, "file": "tick", "gain_db": -30}], 2)[0] is True  # quiet micro-sound ignored
         print("self-test ok"); sys.exit(0)
     sys.exit(main())

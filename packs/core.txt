@@ -170,3 +170,5 @@ setup real-sfx python3 scripts/listen.py install --yes
 skill openverse-sounds
 fetch hyperframes-to-after-effects clipwing/skills skills/hyperframes-to-after-effects
 skill premium-product-film
+skill brief-amplifier
+fetch voicestudio debpalash/VoiceStudio skills/voicestudio

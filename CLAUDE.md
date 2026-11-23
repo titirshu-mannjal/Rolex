@@ -6,7 +6,7 @@ The skills, plugins and agents below are installed user-wide by `install.sh`. If
 
 ## How to start any video
 
-Use the `reel-production` skill: the director's playbook. It is the spine (research → brief → script and voice → look → storyboard → build → sound → edit and QA → deliver) with one default tool per stage, hard gates and a `TOOLS.md` ledger, and it routes each film to one branch: footage edit (`edit-kit:director`), code-built promo (`edit-kit:saas`), 3D product (`product-check-reel`), story/place/history, special look (`edit-kit:video-clone`), music-driven, explainer. It works end to end and stops only for money, publishing, licences and consent.
+First run `brief-amplifier`: the user writes short prompts on purpose; expand them into a full super-brief (idea, look in numbers, beat sheet, voice, music, sound, brand) before any work. Then Use the `reel-production` skill: the director's playbook. It is the spine (research → brief → script and voice → look → storyboard → build → sound → edit and QA → deliver) with one default tool per stage, hard gates and a `TOOLS.md` ledger, and it routes each film to one branch: footage edit (`edit-kit:director`), code-built promo (`edit-kit:saas`), 3D product (`product-check-reel`), story/place/history, special look (`edit-kit:video-clone`), music-driven, explainer. It works end to end and stops only for money, publishing, licences and consent.
 Work goes in `productions/<slug>/`. A series keeps its bible in `productions/<series>/bible/` and every episode reads it first.
 
 Before building, look at `references/` if it exists: two finished videos Claude made in this workflow, with their full source, treatment, storyboards and sound scripts. Match or beat that bar.
